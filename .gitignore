@@ -2,6 +2,7 @@
 out/
 build/
 bin/
+**/obj/
 
 # Publish-Verzeichnis (Release-Artefakte, zu groß für Git — lokal behalten)
 publish/
