@@ -1,0 +1,35 @@
+# Build-Ausgaben
+out/
+build/
+bin/
+
+# Publish-Verzeichnis (Release-Artefakte, zu groß für Git — lokal behalten)
+publish/
+publish-test/
+
+# Visual Studio / MSBuild
+*.user
+*.suo
+.vs/
+*_wpftmp.csproj
+
+# .NET
+*.pdb
+*.nupkg
+nuget.config
+
+# Python-Umgebung
+.venv/
+
+# Datenbank (wird zur Laufzeit neben der EXE erstellt)
+*.db
+*.db-shm
+*.db-wal
+*.schema_version
+
+# Logs
+*.log
+startup.log
+
+# Claude Code lokale Einstellungen (enthält maschinenbezogene Pfade)
+.claude/

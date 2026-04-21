@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishTrimmed>false</PublishTrimmed>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>RezepturMeister</Product>
+    <Copyright>© 2026</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="PdfSharpCore" Version="1.3.1" />
+    <PackageReference Include="ClosedXML" Version="0.102.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Test-Projekt liegt im Unterordner → aus Hauptprojekt-Kompilierung ausschließen -->
+    <Compile Remove="RezepturMeister.Tests\**" />
+    <None Remove="RezepturMeister.Tests\**" />
+    <Content Remove="RezepturMeister.Tests\**" />
+    <EmbeddedResource Remove="RezepturMeister.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Meister-Suite CI: Marken-Schrift als WPF-Resource -->
+    <Resource Include="Resources\Fonts\EskapadeFraktur-Regular.ttf"/>
+  </ItemGroup>
+
+</Project>

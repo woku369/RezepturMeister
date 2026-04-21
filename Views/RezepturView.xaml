@@ -1,0 +1,171 @@
+<UserControl x:Class="RezepturMeister.Views.RezepturView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RezepturMeister.Views"
+             xmlns:vm="clr-namespace:RezepturMeister.ViewModels"
+             xmlns:conv="clr-namespace:RezepturMeister.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <conv:DecimalConverter x:Key="DecimalConverter" />
+        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <conv:PercentageConverter x:Key="PercentageConverter" />
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <vm:RezepturViewModel />
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Linke Seite: Rezepturliste -->
+        <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <WrapPanel Background="{StaticResource SurfaceBrush}"
+                           Margin="5,6,5,4">
+                    <Button Content="Neu"         Command="{Binding NewRezepturCommand}"         Margin="0,0,5,4"/>
+                    <Button Content="Bearbeiten"  Command="{Binding EditRezepturCommand}"        Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}"/>
+                    <Button Content="Löschen"     Command="{Binding DeleteRezepturCommand}"      Margin="0,0,5,4"
+                            Style="{StaticResource DangerButton}"/>
+                    <Button Content="Unterversion" Command="{Binding CreateSubVersionCommand}"  Margin="0,0,12,4"
+                            Style="{StaticResource SecondaryButton}"/>
+                    <Button Content="PDF"         Command="{Binding ExportPdfCommand}"          Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}"/>
+                    <Button Content="Excel"       Command="{Binding ExportXlsxCommand}"         Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}"/>
+                    <Button Content="Drucken"     Command="{Binding DruckenCommand}"            Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}"/>
+                    <Button Content="Nährwerte PDF"   Command="{Binding ExportNaehrwertePdfCommand}"  Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}" ToolTip="Nährwertdeklaration als PDF exportieren"/>
+                    <Button Content="Nährwerte Excel" Command="{Binding ExportNaehrwerteXlsxCommand}" Margin="0,0,12,4"
+                            Style="{StaticResource SecondaryButton}" ToolTip="Nährwertdeklaration als Excel exportieren"/>
+                    <Button Content="Import CSV"  Command="{Binding ImportCsvCommand}"          Margin="0,0,0,4"
+                            Style="{StaticResource SecondaryButton}" ToolTip="Rezeptur aus CSV importieren"/>
+                </WrapPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,0,5,4">
+                    <TextBlock Text="Suche:" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox Text="{Binding SuchText, UpdateSourceTrigger=PropertyChanged}"
+                             Width="160" VerticalAlignment="Center"
+                             ToolTip="Nach Nummer, Charge oder Bemerkungen filtern"/>
+                    <Button Content="✕" Command="{Binding ClearSuchTextCommand}"
+                            Margin="4,0,0,0" Padding="5,2" ToolTip="Filter zurücksetzen"/>
+                </StackPanel>
+                <DataGrid Grid.Row="2" Margin="5" ItemsSource="{Binding RezepturenView}" SelectedItem="{Binding SelectedRezeptur}" AutoGenerateColumns="False" CanUserAddRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Nummer" Binding="{Binding Nummer}" Width="70"/>
+                        <DataGridTextColumn Header="Datum" Binding="{Binding Erstellungsdatum, StringFormat=d}" Width="80"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <!-- Rechte Seite: Rezeptur-Editor -->
+        <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="5">
+            <ScrollViewer>
+                <StackPanel Margin="10" Visibility="{Binding CurrentRezeptur, Converter={StaticResource NullToVisibilityConverter}}">
+                    <TextBlock Text="Rezeptur bearbeiten" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                    
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Name:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding CurrentRezeptur.Name}" Margin="5,0,0,0"
+                                 ToolTip="Produktname der Rezeptur (z.B. 'Gurktaler Kräuter 38%')"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Nummer:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding CurrentRezeptur.Nummer}" Margin="5,0,0,0"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Datum:" VerticalAlignment="Center"/>
+                        <DatePicker Grid.Column="1" SelectedDate="{Binding CurrentRezeptur.Erstellungsdatum}" Margin="5,0,0,0"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Charge:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding CurrentRezeptur.Chargennummer}" Margin="5,0,0,0"/>
+                    </Grid>
+
+                    <TextBlock Text="Bemerkungen:" Margin="0,10,0,5"/>
+                    <TextBox Text="{Binding CurrentRezeptur.Bemerkungen}" Height="60" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Zutaten:" FontWeight="Bold" Margin="0,10,0,5"/>
+                    <DataGrid ItemsSource="{Binding CurrentRezeptur.Zutaten}" SelectedItem="{Binding SelectedZutat}" AutoGenerateColumns="False" Height="200" Margin="0,0,0,10"
+                              CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Rohstoff" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.VerfuegbareRohstoffe, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                                 SelectedValue="{Binding RohstoffId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                 DisplayMemberPath="Name" 
+                                                 SelectedValuePath="Id"
+                                                 IsEditable="False"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Manuell" Binding="{Binding ManuellerName, UpdateSourceTrigger=PropertyChanged}" Width="160"/>
+                            <DataGridTextColumn Header="Menge" Binding="{Binding Menge, Converter={StaticResource DecimalConverter}}" Width="80"/>
+                            <DataGridComboBoxColumn Header="Einheit" SelectedItemBinding="{Binding Einheit}" Width="60">
+                                <DataGridComboBoxColumn.ItemsSource>
+                                    <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                        <sys:String>g</sys:String>
+                                        <sys:String>ml</sys:String>
+                                    </x:Array>
+                                </DataGridComboBoxColumn.ItemsSource>
+                            </DataGridComboBoxColumn>
+                            <DataGridTextColumn Header="%" Binding="{Binding Prozent, StringFormat=F1}" Width="60" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Zutat hinzufügen" Command="{Binding AddZutatCommand}" Margin="0,0,10,0"/>
+                        <Button Content="Zutat entfernen" Command="{Binding RemoveZutatCommand}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding GesamtMenge, StringFormat='Gesamtmenge: {0:F2} g'}" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding GesamtAlkohol, StringFormat='Gesamtalkohol: {0:F2} % vol.'}" FontWeight="Bold" Margin="0,5,0,0"
+                               ToolTip="Näherungswert: Σ(Volumen_Ethanol_je_Zutat) / Gesamtvolumen × 100 — ohne Volumenkontraktionskorrektur"/>
+                    <TextBlock Text="{Binding GesamtPreis, StringFormat='Rohstoffkosten: {0:F4} €'}" FontWeight="Bold" Margin="0,5,0,0"
+                               ToolTip="Summe der Rohstoffkosten (nur Zutaten mit Rohstoff + Preis)"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                        <Button Content="Speichern" Command="{Binding SaveRezepturCommand}" Margin="0,0,10,0"
+                                Style="{StaticResource SaveButton}"/>
+                        <Button Content="Abbrechen" Command="{Binding CancelEditCommand}"
+                                Style="{StaticResource SecondaryButton}"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

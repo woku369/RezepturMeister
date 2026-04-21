@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <BaseOutputPath>out\</BaseOutputPath>
+    <OutputPath>out\</OutputPath>
+    <BaseIntermediateOutputPath>build\obj\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj\**;obj/**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>
