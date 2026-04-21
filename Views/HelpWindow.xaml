@@ -246,7 +246,7 @@
                         CornerRadius="0,4,4,0"
                         Padding="12,10" Margin="0,10,0,4">
                     <TextBlock Style="{StaticResource Body}" Margin="0"
-                               Text="💡  Tipp: Für Rohstoffe ohne Nährwertrelevanz (z.B. Wasser, Destillate) alle Felder auf 0 setzen, damit keine Warnung &#x201E;Fehlende Daten&#x201C; erscheint."/>
+                               Text="💡  Tipp: Für Rohstoffe ohne Nährwertgehalt (z.B. Wasser) alle Felder auf 0 setzen, damit keine Warnung &#x201E;Fehlende Daten&#x201C; erscheint. Ethanol hat 29 kJ/g (7 kcal/g) — alkoholhaltige Zutaten müssen mit korrekten Werten erfasst werden."/>
                 </Border>
 
                 <!-- ══════════════════ DATENSICHERUNG ══════════════════ -->
