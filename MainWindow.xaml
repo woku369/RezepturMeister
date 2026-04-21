@@ -34,16 +34,17 @@
                     <StackPanel VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Rezeptur"
-                                       FontFamily="Segoe UI" FontSize="26"
-                                       FontWeight="Light"
+                                       FontFamily="{StaticResource BrandFont}"
+                                       FontSize="28" FontWeight="Normal"
                                        Foreground="White" VerticalAlignment="Bottom"/>
                             <TextBlock Text="Meister"
-                                       FontFamily="Segoe UI" FontSize="26"
-                                       FontWeight="SemiBold"
-                                       Foreground="#C8922A" VerticalAlignment="Bottom"/>
+                                       FontFamily="{StaticResource BrandFont}"
+                                       FontSize="28" FontWeight="Normal"
+                                       Foreground="#C8922A" VerticalAlignment="Bottom"
+                                       Margin="6,0,0,0"/>
                         </StackPanel>
                         <TextBlock Text="Rezepturen für alkoholische Getränke"
-                                   FontSize="11" FontWeight="Normal"
+                                   FontFamily="Segoe UI" FontSize="11" FontWeight="Normal"
                                    Foreground="#8AAFD4" Margin="2,2,0,0"/>
                     </StackPanel>
                 </StackPanel>

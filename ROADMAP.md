@@ -103,6 +103,17 @@
 - [x] **Direkter EXE-Pfad**: `OutputPath` auf `out/` gesetzt, damit `RezepturMeister.exe` ohne zusätzliche Unterordner liegt
 - [x] **Warnungsbereinigung MainViewModel**: ungenutzte, nicht initialisierte Felder entfernt (`CS8618`, `CS0169`)
 
+## Phase 10: UI-Polish & Stabilisierung (Abgeschlossen)
+- [x] **Bugfix Button-Lesbarkeit**: `TextElement.Foreground="{TemplateBinding Foreground}"` auf `ContentPresenter` in allen Button-Templates — globaler `TextBlock`-Style hatte weißen Foreground überschrieben
+- [x] **Bugfix Schema-Migration**: `EnsureDatabase` auf `ALTER TABLE` umgestellt statt DB löschen — Daten bleiben bei Schemaupdate erhalten
+- [x] **Bugfix XColor.FromArgb**: `ExportService.cs` korrigiert (PdfSharpCore kennt kein `FromRgb`)
+- [x] **Logo EskapadeFraktur**: Wortmarke „Rezeptur" + „Meister" in `EskapadeFraktur-Regular.ttf` (28pt)
+- [x] **`BrandFont`-Resource**: auf `pack://application:,,,/Resources/Fonts/#Eskapade Fraktur` gesetzt
+- [x] **Button-Icons**: Segoe MDL2 Assets Icons auf alle Aktions-Buttons (Hinzufügen, Speichern, Löschen, Bearbeiten, Drucken, PDF, Excel, Import, …)
+- [x] **`BtnIcon`/`BtnLabel`-Styles**: in `AppTheme.xaml` — Foreground via `RelativeSource`-Binding an Button gebunden
+- [x] **v1.0.0 Release**: `PublishSingleFile=true`, Single-File-EXE ~192 MB, `publish\`-Ordner
+- [x] **Git-Repository**: initialisiert, remote `woku369/RezepturMeister` auf GitHub
+
 ## Offene Themen / Backlog
 - [ ] Endprodukt-Tabelle als eigenes Model (aktuell: Rezeptur = Endprodukt-Näherung)
 - [ ] Kategorie-Verwaltung für Rohstoffe (statt Freitext)

@@ -36,7 +36,21 @@
     <!--  Schrift                                                      -->
     <!-- ============================================================ -->
     <FontFamily x:Key="AppFont">Segoe UI</FontFamily>
-    <FontFamily x:Key="BrandFont">Segoe UI</FontFamily>
+    <FontFamily x:Key="BrandFont">pack://application:,,,/Resources/Fonts/#Eskapade Fraktur</FontFamily>
+
+    <!-- TextBlock-Hilfsstyles für Button-Inhalte (Icon + Label) -->
+    <!-- Binden Foreground an den umgebenden Button, damit weiß/dunkel korrekt vererbt wird -->
+    <Style x:Key="BtnIcon" TargetType="TextBlock">
+        <Setter Property="FontFamily"        Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize"          Value="13"/>
+        <Setter Property="Margin"            Value="0,1,5,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground"        Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+    </Style>
+    <Style x:Key="BtnLabel" TargetType="TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground"        Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+    </Style>
 
     <!-- ============================================================ -->
     <!--  Effekte                                                      -->

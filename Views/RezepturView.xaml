@@ -33,33 +33,88 @@
                 </Grid.RowDefinitions>
                 <WrapPanel Background="{StaticResource SurfaceBrush}"
                            Margin="5,6,5,4">
-                    <Button Content="Neu"         Command="{Binding NewRezepturCommand}"         Margin="0,0,5,4"/>
-                    <Button Content="Bearbeiten"  Command="{Binding EditRezepturCommand}"        Margin="0,0,5,4"
-                            Style="{StaticResource SecondaryButton}"/>
-                    <Button Content="Löschen"     Command="{Binding DeleteRezepturCommand}"      Margin="0,0,5,4"
-                            Style="{StaticResource DangerButton}"/>
-                    <Button Content="Unterversion" Command="{Binding CreateSubVersionCommand}"  Margin="0,0,12,4"
-                            Style="{StaticResource SecondaryButton}"/>
-                    <Button Content="PDF"         Command="{Binding ExportPdfCommand}"          Margin="0,0,5,4"
-                            Style="{StaticResource SecondaryButton}"/>
-                    <Button Content="Excel"       Command="{Binding ExportXlsxCommand}"         Margin="0,0,5,4"
-                            Style="{StaticResource SecondaryButton}"/>
-                    <Button Content="Drucken"     Command="{Binding DruckenCommand}"            Margin="0,0,5,4"
-                            Style="{StaticResource SecondaryButton}"/>
-                    <Button Content="Nährwerte PDF"   Command="{Binding ExportNaehrwertePdfCommand}"  Margin="0,0,5,4"
-                            Style="{StaticResource SecondaryButton}" ToolTip="Nährwertdeklaration als PDF exportieren"/>
-                    <Button Content="Nährwerte Excel" Command="{Binding ExportNaehrwerteXlsxCommand}" Margin="0,0,12,4"
-                            Style="{StaticResource SecondaryButton}" ToolTip="Nährwertdeklaration als Excel exportieren"/>
-                    <Button Content="Import CSV"  Command="{Binding ImportCsvCommand}"          Margin="0,0,0,4"
-                            Style="{StaticResource SecondaryButton}" ToolTip="Rezeptur aus CSV importieren"/>
+                    <Button Command="{Binding NewRezepturCommand}" Margin="0,0,5,4">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE710;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Neu"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding EditRezepturCommand}" Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE70F;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Bearbeiten"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding DeleteRezepturCommand}" Margin="0,0,5,4"
+                            Style="{StaticResource DangerButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE74D;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Löschen"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding CreateSubVersionCommand}" Margin="0,0,12,4"
+                            Style="{StaticResource SecondaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE8C8;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Unterversion"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportPdfCommand}" Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE8A5;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="PDF"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportXlsxCommand}" Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE9D2;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Excel"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding DruckenCommand}" Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE749;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Drucken"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportNaehrwertePdfCommand}" Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}"
+                            ToolTip="Nährwertdeklaration als PDF exportieren">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE9EC;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Nährwerte PDF"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportNaehrwerteXlsxCommand}" Margin="0,0,12,4"
+                            Style="{StaticResource SecondaryButton}"
+                            ToolTip="Nährwertdeklaration als Excel exportieren">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE9D2;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Nährwerte Excel"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ImportCsvCommand}" Margin="0,0,0,4"
+                            Style="{StaticResource SecondaryButton}"
+                            ToolTip="Rezeptur aus CSV importieren">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE8D6;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Import CSV"/>
+                        </StackPanel>
+                    </Button>
                 </WrapPanel>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,0,5,4">
                     <TextBlock Text="Suche:" VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <TextBox Text="{Binding SuchText, UpdateSourceTrigger=PropertyChanged}"
                              Width="160" VerticalAlignment="Center"
                              ToolTip="Nach Nummer, Charge oder Bemerkungen filtern"/>
-                    <Button Content="✕" Command="{Binding ClearSuchTextCommand}"
-                            Margin="4,0,0,0" Padding="5,2" ToolTip="Filter zurücksetzen"/>
+                    <Button Command="{Binding ClearSuchTextCommand}"
+                            Margin="4,0,0,0" Padding="5,2" ToolTip="Filter zurücksetzen">
+                        <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE8BB;" Margin="0"/>
+                    </Button>
                 </StackPanel>
                 <DataGrid Grid.Row="2" Margin="5" ItemsSource="{Binding RezepturenView}" SelectedItem="{Binding SelectedRezeptur}" AutoGenerateColumns="False" CanUserAddRows="False">
                     <DataGrid.Columns>
@@ -148,8 +203,19 @@
                     </DataGrid>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Content="Zutat hinzufügen" Command="{Binding AddZutatCommand}" Margin="0,0,10,0"/>
-                        <Button Content="Zutat entfernen" Command="{Binding RemoveZutatCommand}"/>
+                        <Button Command="{Binding AddZutatCommand}" Margin="0,0,10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE710;"/>
+                                <TextBlock Style="{StaticResource BtnLabel}" Text="Zutat hinzufügen"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding RemoveZutatCommand}"
+                                Style="{StaticResource DangerButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE738;"/>
+                                <TextBlock Style="{StaticResource BtnLabel}" Text="Zutat entfernen"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
 
                     <TextBlock Text="{Binding GesamtMenge, StringFormat='Gesamtmenge: {0:F2} g'}" FontWeight="Bold"/>
@@ -159,10 +225,20 @@
                                ToolTip="Summe der Rohstoffkosten (nur Zutaten mit Rohstoff + Preis)"/>
 
                     <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                        <Button Content="Speichern" Command="{Binding SaveRezepturCommand}" Margin="0,0,10,0"
-                                Style="{StaticResource SaveButton}"/>
-                        <Button Content="Abbrechen" Command="{Binding CancelEditCommand}"
-                                Style="{StaticResource SecondaryButton}"/>
+                        <Button Command="{Binding SaveRezepturCommand}" Margin="0,0,10,0"
+                                Style="{StaticResource SaveButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE74E;"/>
+                                <TextBlock Style="{StaticResource BtnLabel}" Text="Speichern"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding CancelEditCommand}"
+                                Style="{StaticResource SecondaryButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE8FB;"/>
+                                <TextBlock Style="{StaticResource BtnLabel}" Text="Abbrechen"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
