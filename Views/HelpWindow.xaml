@@ -1,0 +1,272 @@
+<Window x:Class="RezepturMeister.Views.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Benutzerhandbuch – RezepturMeister"
+        Height="780" Width="760"
+        MinHeight="500" MinWidth="560"
+        Background="{StaticResource BackgroundBrush}"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip">
+
+    <Window.Resources>
+        <Style x:Key="H1" TargetType="TextBlock">
+            <Setter Property="FontSize"       Value="15"/>
+            <Setter Property="FontWeight"     Value="SemiBold"/>
+            <Setter Property="Foreground"     Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Margin"         Value="0,22,0,4"/>
+            <Setter Property="TextWrapping"   Value="Wrap"/>
+        </Style>
+        <Style x:Key="H2" TargetType="TextBlock">
+            <Setter Property="FontSize"       Value="13"/>
+            <Setter Property="FontWeight"     Value="SemiBold"/>
+            <Setter Property="Foreground"     Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="Margin"         Value="0,10,0,2"/>
+            <Setter Property="TextWrapping"   Value="Wrap"/>
+        </Style>
+        <Style x:Key="Body" TargetType="TextBlock">
+            <Setter Property="FontSize"       Value="13"/>
+            <Setter Property="Foreground"     Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="TextWrapping"   Value="Wrap"/>
+            <Setter Property="LineHeight"     Value="20"/>
+            <Setter Property="Margin"         Value="0,2,0,2"/>
+        </Style>
+        <Style x:Key="Hint" TargetType="TextBlock">
+            <Setter Property="FontSize"       Value="12"/>
+            <Setter Property="Foreground"     Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="TextWrapping"   Value="Wrap"/>
+            <Setter Property="Margin"         Value="0,2,0,2"/>
+        </Style>
+        <Style x:Key="Code" TargetType="TextBlock">
+            <Setter Property="FontFamily"     Value="Consolas"/>
+            <Setter Property="FontSize"       Value="12"/>
+            <Setter Property="Foreground"     Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="TextWrapping"   Value="Wrap"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="3"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#0F2444" Offset="0"/>
+                    <GradientStop Color="#1E3F6F" Offset="0.6"/>
+                    <GradientStop Color="#16305A" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel Margin="20,12,20,10">
+                <TextBlock FontFamily="{StaticResource BrandFont}" FontSize="24"
+                           Foreground="White" Text="Benutzerhandbuch"/>
+                <TextBlock FontFamily="Segoe UI" FontSize="11"
+                           Foreground="#8AAFD4" Margin="2,2,0,0"
+                           Text="RezepturMeister v1.0.0  –  Kurzreferenz"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Gold accent bar -->
+        <Border Grid.Row="1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#C8922A" Offset="0"/>
+                    <GradientStop Color="#E8B84B" Offset="0.5"/>
+                    <GradientStop Color="#C8922A" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+
+        <!-- Inhalt -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
+                      Padding="32,4,32,28">
+            <StackPanel MaxWidth="660">
+
+                <!-- ══════════════════ ÜBERSICHT ══════════════════ -->
+                <TextBlock Style="{StaticResource H1}" Text="Übersicht" Margin="0,16,0,4"/>
+                <Border Background="{StaticResource GoldBrush}" Height="2" Margin="0,0,0,8" Opacity="0.5"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="RezepturMeister ist eine Windows-Desktop-Anwendung zur Verwaltung von Rohstoffen und Rezepturen für alkoholische Getränke, Liköre, Brände und Sirupe. Alle Daten werden lokal in einer SQLite-Datenbank neben der EXE-Datei gespeichert — keine Cloud, keine Installation nötig."/>
+
+                <!-- ══════════════════ ROHSTOFFE ══════════════════ -->
+                <TextBlock Style="{StaticResource H1}" Text="1  Rohstoffe"/>
+                <Border Background="{StaticResource GoldBrush}" Height="2" Margin="0,0,0,8" Opacity="0.5"/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Rohstoff anlegen"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="➕ Hinzufügen klicken → leerer Eintrag in der Liste. Name und Dichte (g/ml) sind Pflichtfelder. Kategorie, Alkoholgehalt (% vol.), Preis (€/kg bzw. l) und Lieferant sind optional. Mit 💾 Speichern bestätigen."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Rohstoff bearbeiten"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="Zeile in der Liste auswählen → Felder bearbeiten → 💾 Speichern. Ohne Speichern gehen die Änderungen verloren."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Rohstoff löschen"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="🗑 Löschen entfernt den Rohstoff dauerhaft. Rohstoffe, die in einer Rezeptur verwendet werden, können nicht gelöscht werden — erst alle betreffenden Rezeptur-Zutaten entfernen."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Datenblatt verknüpfen &amp; öffnen"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="📎 Datenblatt verknüpfen → Datei-Dialog → PDF oder XLSX wählen. Der Pfad wird im Rohstoff gespeichert. 📄 Datenblatt öffnen startet die Datei mit dem Windows-Standardprogramm."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Nährwerte manuell erfassen"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="Rohstoff in der Liste auswählen → Expander &#x201E;Nährwertdaten pro 100 g&#x201C; am unteren Rand aufklappen → Werte eintragen → Speichern. Alle Werte beziehen sich auf 100 g des Rohstoffs."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Nährwerte per CSV-Import"/>
+                <TextBlock Style="{StaticResource Body}" Text="Schaltfläche 📥 Nährwerte CSV importieren → CSV-Datei wählen."/>
+                <TextBlock Style="{StaticResource Body}" Margin="0,4,0,2" Text="Format (Semikolon-getrennt, erste Zeile = Kopfzeile):"/>
+                <Border Background="{StaticResource SurfaceAltBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        Padding="12,8" Margin="0,4,0,6" CornerRadius="4">
+                    <TextBlock Style="{StaticResource Code}"
+                               Text="Name;Energie_kJ;Energie_kcal;Fett;GesaettigteFettsaeuren;Kohlenhydrate;Zucker;Ballaststoffe;Eiweiss;Salz&#x0A;Zucker;1700;406;0;0;100;100;0;0;0&#x0A;Wasser;0;0;0;0;0;0;0;0;0"/>
+                </Border>
+                <TextBlock Style="{StaticResource Hint}"
+                           Text="Der Name muss exakt mit dem Rohstoff-Namen in der Datenbank übereinstimmen (Groß-/Kleinschreibung beachten). Vorhandene Nährwerte werden überschrieben."/>
+
+                <!-- ══════════════════ REZEPTUREN ══════════════════ -->
+                <TextBlock Style="{StaticResource H1}" Text="2  Rezepturen"/>
+                <Border Background="{StaticResource GoldBrush}" Height="2" Margin="0,0,0,8" Opacity="0.5"/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Neue Rezeptur anlegen"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="➕ Neu → Formular öffnet sich rechts. Name (Pflicht), Nummer (z.B. 1.0), Datum und Chargennummer ausfüllen. Zutaten mit ➕ Zutat hinzufügen ergänzen. Mit 💾 Speichern abschließen."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Zutaten"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="Jede Zutat kann einem Rohstoff aus der Datenbank zugewiesen werden (Spalte Rohstoff) oder manuell erfasst werden (Spalte Manuell mit Name, Dichte und Alkohol direkt in der Zeile). Einheit: g oder ml."/>
+                <TextBlock Style="{StaticResource Body}" Margin="0,4,0,0"
+                           Text="🗑 Zutat entfernen löscht die markierte Zeile aus der aktuellen Rezeptur."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Automatische Berechnungen"/>
+                <TextBlock Style="{StaticResource Body}" Text="• Gesamtmenge (g) — Summe aller Zutaten in Gramm (ml-Zutaten werden über die Dichte umgerechnet)."/>
+                <TextBlock Style="{StaticResource Body}" Text="• % vol. Alkohol — Näherungswert: Σ(Ethanol-Volumen je Zutat) / Gesamtvolumen × 100."/>
+                <TextBlock Style="{StaticResource Body}" Text="• Rohstoffkosten (€) — Preis × Menge für alle Zutaten mit verknüpftem Rohstoff und hinterlegtem Preis."/>
+                <TextBlock Style="{StaticResource Body}" Text="• % Anteil je Zutat — Gewichtsanteil an der Gesamtmenge, live berechnet."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Unterversionen"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="Eine markierte Rezeptur → &#xE8C8; Unterversion erzeugt eine neue Ableitung (1.0 → 1.1 → 1.2 …). Die Ursprungsversion bleibt unverändert erhalten. So lässt sich die Entwicklung einer Rezeptur vollständig nachvollziehen."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Rezeptur bearbeiten / löschen"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="✏ Bearbeiten öffnet die Rezeptur im Editor. 🗑 Löschen entfernt die Rezeptur samt aller Zutaten dauerhaft."/>
+
+                <!-- ══════════════════ SUCHE ══════════════════ -->
+                <TextBlock Style="{StaticResource H1}" Text="3  Suche &amp; Filter"/>
+                <Border Background="{StaticResource GoldBrush}" Height="2" Margin="0,0,0,8" Opacity="0.5"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="Das Suchfeld über der jeweiligen Liste filtert live nach Eingabe. Rohstoffe: nach Name und Kategorie. Rezepturen: nach Name, Nummer, Chargennummer und Bemerkungen. Das ✕-Symbol rechts neben dem Suchfeld setzt den Filter zurück."/>
+
+                <!-- ══════════════════ EXPORT ══════════════════ -->
+                <TextBlock Style="{StaticResource H1}" Text="4  Export &amp; Druck"/>
+                <Border Background="{StaticResource GoldBrush}" Height="2" Margin="0,0,0,8" Opacity="0.5"/>
+
+                <TextBlock Style="{StaticResource Body}" Margin="0,0,0,6"
+                           Text="In beiden Ansichten stehen folgende Funktionen zur Verfügung:"/>
+
+                <!-- Export-Tabelle -->
+                <Border Background="{StaticResource SurfaceBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="4" Padding="0" Margin="0,0,0,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <!-- Header -->
+                        <Border Grid.Row="0" Grid.ColumnSpan="2"
+                                Background="{StaticResource HeaderBrush}" Padding="10,6">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Schaltfläche" FontWeight="SemiBold" FontSize="12"/>
+                                <TextBlock Grid.Column="1" Text="Beschreibung"  FontWeight="SemiBold" FontSize="12"/>
+                            </Grid>
+                        </Border>
+                        <!-- Row 1 -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Padding="10,6" Text="📄 Export PDF" FontSize="12"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Padding="10,6" FontSize="12" TextWrapping="Wrap"
+                                   Text="Formatierte PDF-Datei (DIN A4, automatischer Seitenumbruch)"/>
+                        <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="0,0,0,1"/>
+                        <!-- Row 2 -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Padding="10,6" Text="📊 Export Excel" FontSize="12"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Padding="10,6" FontSize="12" TextWrapping="Wrap"
+                                   Text="XLSX-Datei mit automatischer Spaltenbreite"/>
+                        <Border Grid.Row="2" Grid.ColumnSpan="2" BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="0,0,0,1"/>
+                        <!-- Row 3 -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Padding="10,6" Text="🖨 Drucken" FontSize="12"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Padding="10,6" FontSize="12" TextWrapping="Wrap"
+                                   Text="Windows-Druckdialog (nur Rezepturen-Ansicht)"/>
+                        <Border Grid.Row="3" Grid.ColumnSpan="2" BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="0,0,0,1"/>
+                        <!-- Row 4 -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Padding="10,6" Text="🍎 Nährwerte PDF/Excel" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Padding="10,6" FontSize="12" TextWrapping="Wrap"
+                                   Text="Nährwertdeklaration der Rezeptur (normiert auf 100 g, LMIV-Format)"/>
+                    </Grid>
+                </Border>
+                <TextBlock Style="{StaticResource Hint}"
+                           Text="Alle Exports öffnen einen Speichern-Dialog — der Zielordner ist frei wählbar."/>
+
+                <!-- ══════════════════ NÄHRWERTE ══════════════════ -->
+                <TextBlock Style="{StaticResource H1}" Text="5  Nährwertdeklaration"/>
+                <Border Background="{StaticResource GoldBrush}" Height="2" Margin="0,0,0,8" Opacity="0.5"/>
+
+                <TextBlock Style="{StaticResource Body}"
+                           Text="Der RezepturMeister berechnet aus den Rohstoff-Nährwerten eine gewichtsanteilige Nährwertdeklaration für die gesamte Rezeptur — normiert auf 100 g Endprodukt, entsprechend LMIV-Anforderungen."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Voraussetzungen"/>
+                <TextBlock Style="{StaticResource Body}"
+                           Text="Alle Rohstoffe in der Rezeptur müssen Nährwertdaten hinterlegt haben (mindestens Energie kJ). Fehlende Daten werden im Export kenntlich gemacht — die Summen sind dann unvollständig."/>
+
+                <TextBlock Style="{StaticResource H2}" Text="Ablauf"/>
+                <TextBlock Style="{StaticResource Body}" Text="1.  Nährwerte bei allen Rohstoffen erfassen (Expander in Rohstoff-Ansicht)."/>
+                <TextBlock Style="{StaticResource Body}" Text="2.  Rezeptur öffnen → alle Zutaten einem Rohstoff zuweisen."/>
+                <TextBlock Style="{StaticResource Body}" Text="3.  🍎 Nährwerte PDF oder 🍎 Nährwerte Excel klicken."/>
+
+                <!-- Info-Box -->
+                <Border Background="{StaticResource PrimaryLightBrush}"
+                        BorderBrush="{StaticResource AccentBrush}"
+                        BorderThickness="3,0,0,0"
+                        CornerRadius="0,4,4,0"
+                        Padding="12,10" Margin="0,10,0,4">
+                    <TextBlock Style="{StaticResource Body}" Margin="0"
+                               Text="💡  Tipp: Für Rohstoffe ohne Nährwertrelevanz (z.B. Wasser, Destillate) alle Felder auf 0 setzen, damit keine Warnung &#x201E;Fehlende Daten&#x201C; erscheint."/>
+                </Border>
+
+                <!-- ══════════════════ DATENSICHERUNG ══════════════════ -->
+                <TextBlock Style="{StaticResource H1}" Text="6  Datensicherung"/>
+                <Border Background="{StaticResource GoldBrush}" Height="2" Margin="0,0,0,8" Opacity="0.5"/>
+
+                <TextBlock Style="{StaticResource Body}"
+                           Text="Die Datenbank liegt als rezepturmeister.db neben der Anwendungsdatei (RezepturMeister.exe). Eine regelmäßige Sicherung dieser einzelnen Datei genügt, um alle Rohstoffe und Rezepturen zu sichern."/>
+                <TextBlock Style="{StaticResource Body}" Margin="0,6,0,0"
+                           Text="Bei einem Schema-Update (neue Programmversion) erstellt RezepturMeister automatisch eine Sicherungskopie unter rezepturmeister.db.bak_v&lt;Version&gt;_&lt;Datum&gt;. Die Originaldaten bleiben dabei vollständig erhalten."/>
+
+                <!-- Fußzeile -->
+                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
+                        Margin="0,24,0,0" Padding="0,12,0,0">
+                    <TextBlock FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                               TextWrapping="Wrap"
+                               Text="RezepturMeister v1.0.0  ·  © 2026 Wolfgang Glantsching  ·  github.com/woku369/RezepturMeister"/>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

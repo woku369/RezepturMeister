@@ -30,8 +30,9 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="3"/>
                 </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal" Margin="18,10,18,8">
-                    <StackPanel VerticalAlignment="Center">
+                <DockPanel Margin="18,10,18,8" LastChildFill="False">
+                    <!-- Logo links -->
+                    <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Rezeptur"
                                        FontFamily="{StaticResource BrandFont}"
@@ -47,7 +48,17 @@
                                    FontFamily="Segoe UI" FontSize="11" FontWeight="Normal"
                                    Foreground="#8AAFD4" Margin="2,2,0,0"/>
                     </StackPanel>
-                </StackPanel>
+                    <!-- Hilfe-Button rechts -->
+                    <Button DockPanel.Dock="Right" VerticalAlignment="Center"
+                            Style="{StaticResource HeaderButton}"
+                            Click="HelpButton_Click"
+                            ToolTip="Benutzerhandbuch öffnen (F1)">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE897;" FontSize="14"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Hilfe"/>
+                        </StackPanel>
+                    </Button>
+                </DockPanel>
                 <!-- Gold accent bar -->
                 <Border Grid.Row="1">
                     <Border.Background>

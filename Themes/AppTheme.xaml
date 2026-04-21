@@ -127,6 +127,20 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Button – Header (transparent, weiße Schrift für dunklen Header-Hintergrund) -->
+    <Style x:Key="HeaderButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="Foreground"      Value="White"/>
+        <Setter Property="BorderBrush"     Value="#4A7EC7"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Effect"          Value="{x:Null}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#2A4F7F"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- Button – Sekundär (hell, blauer Rahmen + Text) -->
     <Style x:Key="SecondaryButton" TargetType="Button">
         <Setter Property="Background"       Value="{StaticResource PrimaryLightBrush}"/>

@@ -30,4 +30,10 @@ public partial class MainWindow : Window
             throw;
         }
     }
+
+    private void HelpButton_Click(object sender, RoutedEventArgs e)
+    {
+        var help = new Views.HelpWindow { Owner = this };
+        help.Show();
+    }
 }

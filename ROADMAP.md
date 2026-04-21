@@ -114,10 +114,18 @@
 - [x] **v1.0.0 Release**: `PublishSingleFile=true`, Single-File-EXE ~192 MB, `publish\`-Ordner
 - [x] **Git-Repository**: initialisiert, remote `woku369/RezepturMeister` auf GitHub
 
+## Phase 11: Benutzerhandbuch (Abgeschlossen)
+
+- [x] **HelpWindow.xaml**: Vollständiges Benutzerhandbuch als WPF-Fenster (6 Abschnitte: Übersicht, Rohstoffe, Rezepturen, Suche & Filter, Export & Druck, Nährwertdeklaration, Datensicherung)
+- [x] **HelpWindow.xaml.cs**: Minimales Code-Behind
+- [x] **HeaderButton-Style**: Transparenter Button mit weißem Text und hellem Rahmen für Header-Bereich
+- [x] **Hilfe-Button** im App-Header (Segoe MDL2 Icon `E897`, Tooltip, F1-Hinweis)
+- [x] **HelpButton_Click** in `MainWindow.xaml.cs` — öffnet `HelpWindow` als modales Fenster
+
 ## Offene Themen / Backlog
+
 - [ ] Endprodukt-Tabelle als eigenes Model (aktuell: Rezeptur = Endprodukt-Näherung)
 - [ ] Kategorie-Verwaltung für Rohstoffe (statt Freitext)
 - [ ] Chargenprotokoll (Produktionshistorie)
 - [ ] Mehrsprachigkeit (de/en)
-- [ ] Benutzerhandbuch
 - [ ] Einheit „l" und „kg" für Preis unterscheiden (aktuell ein einziges Preisfeld)
