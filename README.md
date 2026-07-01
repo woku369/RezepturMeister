@@ -13,6 +13,7 @@ Eine Windows Desktop-Anwendung zur Verwaltung von Rezepturen für die Herstellun
 - **Suche & Filter**: Live-Filter in Rohstoff- und Rezepturliste.
 - **Export**: PDF- und XLSX-Export für Rohstoff- und Rezepturlisten.
 - **Druck**: Ganzseitiger Druck von Rezepturen auf DIN A4.
+- **Siruprechner**: Sirup-Rezepturen aus Basissirup (Wasser/Zucker/Zitronensäure) und bis zu 5 Mazeraten + 5 Destillaten (aus einer verwaltbaren Komponenten-Datenbank) berechnen — inkl. Alkoholgehalt und Sodawasser-Verdünnung (1+6) mit Einstufung "alkoholfrei" (< 0,5 % vol.), Rezeptur-Speicherung und XLSX-Export.
 
 ## Technologien
 
@@ -75,14 +76,14 @@ dotnet test RezepturMeister.Tests/RezepturMeister.Tests.csproj
 ## Projektstruktur
 
 ```
-Models/         Rohstoff.cs, Rezeptur.cs (inkl. Zutat)
+Models/         Rohstoff.cs, Rezeptur.cs (inkl. Zutat), SirupRezeptur.cs (inkl. SirupPosition), SirupKomponente.cs, SirupBerechnungErgebnis.cs
 Data/           AppDbContext.cs  →  DB: AppContext.BaseDirectory/rezepturmeister.db
-Services/       RohstoffService, RezepturService, ExportService
-ViewModels/     RohstoffViewModel, RezepturViewModel, MainViewModel
-Views/          RohstoffView.xaml, RezepturView.xaml
+Services/       RohstoffService, RezepturService, ExportService, SirupKomponentenService, SirupRezepturService, SirupBerechnungService
+ViewModels/     RohstoffViewModel, RezepturViewModel, SirupViewModel, MainViewModel
+Views/          RohstoffView.xaml, RezepturView.xaml, SirupView.xaml
 Converters/     DecimalConverter, NullToVisibilityConverter, PercentageConverter
 Themes/         AppTheme.xaml  (Farbpalette, Button/DataGrid/Tab-Styles)
-RezepturMeister.Tests/  xUnit-Tests (17 Tests)
+RezepturMeister.Tests/  xUnit-Tests
 publish/        Fertige Release-Version (Single-File EXE + 6 native DLLs)
 ```
 
@@ -101,4 +102,5 @@ publish/        Fertige Release-Version (Single-File EXE + 6 native DLLs)
 - [x] Unit-Tests (17 Tests)
 - [x] UI-Design (dezentes appübergreifendes Theme, Header, Hover-Effekte)
 - [x] Release v1.0.0 (Single-File EXE, portabel)
-- [ ] Benutzerhandbuch
+- [x] Benutzerhandbuch
+- [x] Siruprechner (Basissirup, Mazerate/Destillate, Sodawasser-Verdünnung, XLSX-Export)

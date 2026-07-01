@@ -205,6 +205,99 @@ public class ExportService
         wb.SaveAs(filePath);
     }
 
+    // ── Siruprechner XLSX ────────────────────────────────────────────────────
+
+    public void ExportSirupRezepturXlsx(SirupRezeptur rezeptur, SirupBerechnungErgebnis ergebnis, string filePath)
+    {
+        using var wb = new XLWorkbook();
+        string sheetName = rezeptur.Name;
+        foreach (char c in new[] { '\\', '/', '*', '?', ':', '[', ']' })
+            sheetName = sheetName.Replace(c, '-');
+        if (string.IsNullOrWhiteSpace(sheetName)) sheetName = "Sirup-Rezeptur";
+        if (sheetName.Length > 31) sheetName = sheetName[..31];
+        var ws = wb.Worksheets.Add(sheetName);
+
+        int row = 1;
+        ws.Cell(row, 1).Value = rezeptur.Name;
+        ws.Cell(row, 1).Style.Font.Bold = true;
+        ws.Cell(row, 1).Style.Font.FontSize = 14;
+        row++;
+        ws.Cell(row, 1).Value = $"Datum: {rezeptur.Erstellungsdatum:d}";
+        row++;
+        if (!string.IsNullOrWhiteSpace(rezeptur.Bemerkungen))
+        {
+            ws.Cell(row, 1).Value = rezeptur.Bemerkungen;
+            row++;
+        }
+        row++;
+
+        // ── Block 1: Basissirup ──
+        ws.Cell(row, 1).Value = "Basissirup";
+        ws.Cell(row, 1).Style.Font.Bold = true;
+        ws.Row(row).Style.Fill.BackgroundColor = XLColor.LightGray;
+        row++;
+        ws.Cell(row, 1).Value = "Grundmenge (ml)";        ws.Cell(row, 2).Value = rezeptur.GrundmengeMl;     row++;
+        ws.Cell(row, 1).Value = "Wasser (ml)";             ws.Cell(row, 2).Value = rezeptur.WasserMl;         row++;
+        ws.Cell(row, 1).Value = "Zucker (g)";              ws.Cell(row, 2).Value = rezeptur.ZuckerG;          row++;
+        ws.Cell(row, 1).Value = "Zitronensäure (g)";       ws.Cell(row, 2).Value = rezeptur.ZitronensaeureG;  row++;
+        row++;
+
+        // ── Block 2: Mazerate und Destillate ──
+        ws.Cell(row, 1).Value = "Mazerate und Destillate";
+        ws.Cell(row, 1).Style.Font.Bold = true;
+        ws.Row(row).Style.Fill.BackgroundColor = XLColor.LightGray;
+        row++;
+        ws.Cell(row, 1).Value = "Typ";
+        ws.Cell(row, 2).Value = "Bezeichnung";
+        ws.Cell(row, 3).Value = "Alkoholgehalt (% vol.)";
+        ws.Cell(row, 4).Value = "Menge (ml)";
+        ws.Row(row).Style.Font.Bold = true;
+        row++;
+        foreach (var position in rezeptur.Positionen)
+        {
+            ws.Cell(row, 1).Value = position.Typ;
+            ws.Cell(row, 2).Value = position.Komponente?.Name ?? position.ManuelleBezeichnung;
+            ws.Cell(row, 3).Value = SirupBerechnungService.PositionAlkoholgehalt(position);
+            ws.Cell(row, 4).Value = position.MengeMl;
+            row++;
+        }
+        row++;
+        ws.Cell(row, 1).Value = "Gesamtvolumen Sirup (ml):";  ws.Cell(row, 1).Style.Font.Bold = true; ws.Cell(row, 2).Value = Math.Round(ergebnis.GesamtvolumenSirupMl, 1); row++;
+        ws.Cell(row, 1).Value = "Reiner Alkohol (ml):";       ws.Cell(row, 1).Style.Font.Bold = true; ws.Cell(row, 2).Value = Math.Round(ergebnis.ReinerAlkoholMl, 2);      row++;
+        ws.Cell(row, 1).Value = "Alkoholgehalt Sirup (% vol.):"; ws.Cell(row, 1).Style.Font.Bold = true; ws.Cell(row, 2).Value = Math.Round(ergebnis.AbvSirup, 2);          row++;
+        row++;
+
+        // ── Block 3: Verdünnung mit Sodawasser ──
+        ws.Cell(row, 1).Value = "Verdünnung mit Sodawasser";
+        ws.Cell(row, 1).Style.Font.Bold = true;
+        ws.Row(row).Style.Fill.BackgroundColor = XLColor.LightGray;
+        row++;
+        ws.Cell(row, 1).Value = "Verhältnis Sirup : Sodawasser";
+        ws.Cell(row, 2).Value = $"{rezeptur.VerduennungTeileSirup:0.##} + {rezeptur.VerduennungTeileSodawasser:0.##}";
+        row++;
+        ws.Cell(row, 1).Value = "Sirupmenge (ml)";     ws.Cell(row, 2).Value = rezeptur.SirupMengeVerduennungMl;         row++;
+        ws.Cell(row, 1).Value = "Sodawasser (ml)";     ws.Cell(row, 2).Value = Math.Round(ergebnis.SodawasserMl, 1);     row++;
+        ws.Cell(row, 1).Value = "Gesamt Getränk (ml)"; ws.Cell(row, 2).Value = Math.Round(ergebnis.GesamtGetraenkMl, 1); row++;
+        ws.Cell(row, 1).Value = "End-Alkoholgehalt (% vol.)";
+        ws.Cell(row, 1).Style.Font.Bold = true;
+        ws.Cell(row, 2).Value = Math.Round(ergebnis.EndAbv, 3);
+        ws.Cell(row, 2).Style.Font.Bold = true;
+        row++;
+        ws.Cell(row, 1).Value = "Einstufung";
+        (string text, XLColor color) = ergebnis.Ampel switch
+        {
+            AlkoholAmpel.Gruen => ("alkoholfrei (< 0,5 % vol.)", XLColor.DarkGreen),
+            AlkoholAmpel.Gelb => ("knapp alkoholfrei — Puffer prüfen (nahe 0,5 % vol.)", XLColor.DarkOrange),
+            _ => ("NICHT alkoholfrei (≥ 0,5 % vol.)", XLColor.OrangeRed)
+        };
+        ws.Cell(row, 2).Value = text;
+        ws.Cell(row, 2).Style.Font.FontColor = color;
+        ws.Cell(row, 2).Style.Font.Bold = true;
+
+        ws.Columns().AdjustToContents();
+        wb.SaveAs(filePath);
+    }
+
     // ── Nährwerte PDF ────────────────────────────────────────────────────────
 
     public void ExportNaehrwertePdf(Rezeptur rezeptur, NaehrwertErgebnis nw, string filePath)

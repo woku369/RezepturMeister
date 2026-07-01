@@ -15,6 +15,9 @@ public class AppDbContext : DbContext
     public DbSet<Rohstoff> Rohstoffe { get; set; }
     public DbSet<Rezeptur> Rezepturen { get; set; }
     public DbSet<Zutat> Zutaten { get; set; }
+    public DbSet<SirupKomponente> SirupKomponenten { get; set; }
+    public DbSet<SirupRezeptur> SirupRezepturen { get; set; }
+    public DbSet<SirupPosition> SirupPositionen { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

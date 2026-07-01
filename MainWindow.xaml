@@ -80,6 +80,9 @@
             <TabItem Header="Rezepturen">
                 <views:RezepturView />
             </TabItem>
+            <TabItem Header="Siruprechner">
+                <views:SirupView />
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

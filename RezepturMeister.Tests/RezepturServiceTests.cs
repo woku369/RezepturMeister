@@ -34,7 +34,7 @@ public class RezepturServiceTests : IDisposable
         {
             Nummer = "1.0",
             Erstellungsdatum = DateTime.Today,
-            Zutaten = new List<Zutat>
+            Zutaten = new System.Collections.ObjectModel.ObservableCollection<Zutat>
             {
                 new Zutat { Menge = 500, Einheit = "g", ManuellerName = "Wasser" }
             }

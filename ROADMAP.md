@@ -122,6 +122,21 @@
 - [x] **Hilfe-Button** im App-Header (Segoe MDL2 Icon `E897`, Tooltip, F1-Hinweis)
 - [x] **HelpButton_Click** in `MainWindow.xaml.cs` — öffnet `HelpWindow` als modales Fenster
 
+## Phase 12: Siruprechner (Abgeschlossen)
+
+- [x] **Models**: `SirupKomponente.cs` (Mazerat-/Destillat-Datenbank), `SirupRezeptur.cs` (inkl. `SirupPosition`, als `ObservableObject` für Live-Neuberechnung), `SirupBerechnungErgebnis.cs`
+- [x] **Data**: `AppDbContext` um `SirupKomponenten`, `SirupRezepturen`, `SirupPositionen` erweitert; `SchemaVersion` 4, `EnsureSirupTables` (CREATE TABLE IF NOT EXISTS für Bestands-DBs)
+- [x] **Seeder**: `SirupKomponentenSeeder` — realer Gurktaler-Rohstoffbestand (13 Mazerate ca. 53 % vol., 5 Destillate ca. 55–72 % vol.) mit Dosierungsvorschlag aus der Wissensbasis "Alkoholfreie Sirupe" (Chatverläufe + Skills `rezeptur`/`mazeration-destillation`), idempotent beim Start geladen
+- [x] **Seeder**: `SirupRezepturSeeder` — die 5 Gurktaler-Alpenkräuter-Kernrezepte + Bittersirup "Wermut-Zitrus" als Startrezepturen (Referenzwerte, nicht final validiert), idempotent
+- [x] **Ampel-Status**: `AlkoholAmpel` (Grün/Gelb/Rot) je nach Abstand des End-Alkoholgehalts zum 0,5-%-Grenzwert (Warnschwelle bei 80 % der Grenze), in `SirupBerechnungService`, `SirupView.xaml` und XLSX-Export
+- [x] **Bugfix (pre-existing)**: `RezepturServiceTests.GetAll_IncludesZutaten` — `List<Zutat>` durch `ObservableCollection<Zutat>` ersetzt (Typkonflikt mit `Rezeptur.Zutaten`, verhinderte den Build des gesamten Testprojekts)
+- [x] **Validiert**: Kernlogik (Models/Data/Services/Seeder) + `SirupViewModel` per .NET-8-SDK-Build/Test außerhalb der WPF-Toolchain gegengeprüft (34+ Unit-Tests grün, Seeder-Idempotenz und Berechnungen per Smoke-Test bestätigt — Ergebnisse liegen nah an den dokumentierten Beispielrechnungen)
+- [x] **Services**: `SirupKomponentenService`, `SirupRezepturService` (CRUD, analog Rohstoff-/RezepturService), `SirupBerechnungService` (ABV-Berechnung, Verdünnung 1+n, Alkoholfrei-Grenze 0,5 % vol., Dosierungsvorschlag)
+- [x] **ViewModel**: `SirupViewModel` — Block 1 (Basissirup: Grundmenge/Wasser/Zucker/Zitronensäure), Block 2 (bis zu 5 Mazerate + 5 Destillate aus Komponenten-Datenbank, Menge änderbar, Dosierungsvorschlag übernehmbar, Live-ABV-Berechnung), Block 3 (Verdünnung mit Sodawasser, End-Alkoholgehalt, Alkoholfrei-Einstufung), Rezeptur speichern/laden/löschen, Komponenten-Datenbank verwalten
+- [x] **View**: `SirupView.xaml` — neuer Tab „Siruprechner" in `MainWindow.xaml`
+- [x] **Export**: `ExportService.ExportSirupRezepturXlsx` (Ausgabeformat vorerst nur XLSX, alle 3 Blöcke + Einstufung)
+- [x] **Tests**: `SirupBerechnungTests`, `SirupKomponentenServiceTests`, `SirupRezepturServiceTests`
+
 ## Offene Themen / Backlog
 
 - [ ] Endprodukt-Tabelle als eigenes Model (aktuell: Rezeptur = Endprodukt-Näherung)
@@ -129,3 +144,7 @@
 - [ ] Chargenprotokoll (Produktionshistorie)
 - [ ] Mehrsprachigkeit (de/en)
 - [ ] Einheit „l" und „kg" für Preis unterscheiden (aktuell ein einziges Preisfeld)
+- [ ] Siruprechner: PDF-Export zusätzlich zu XLSX
+- [ ] Siruprechner: manuelle (nicht aus der Datenbank stammende) Mazerat-/Destillat-Bezeichnung im UI editierbar machen
+- [ ] Siruprechner: Startrezeptur "Sanddorn & Wellness" liegt mit den dokumentierten Mittelwert-Dosierungen bei ≈ 0,59 % vol. End-Alkohol (Ampel Rot, > 0,5-%-Grenzwert) — Dosierung vor Produktion reduzieren (z.B. Sanddorn-Mazerat Richtung 40 ml/L) oder Mazerat-ABV verifizieren
+- [ ] Siruprechner: Thujon-Grenzwert für alkoholfreie Getränke (Wermut/Eberraute) vor Serienproduktion rechtlich verifizieren (Anhang III VO 1334/2008)

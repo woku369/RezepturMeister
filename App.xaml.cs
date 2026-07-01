@@ -13,7 +13,7 @@ namespace RezepturMeister;
 /// </summary>
 public partial class App : Application
 {
-    private const int SchemaVersion = 3; // Phase 8: Nährwertdaten pro Rohstoff
+    private const int SchemaVersion = 4; // Phase 12: Siruprechner (SirupKomponenten/SirupRezepturen/SirupPositionen)
 
     public App()
     {
@@ -54,8 +54,58 @@ public partial class App : Application
             File.Copy(dbPath, backup, overwrite: true);
         }
         ApplySchemaMigrations(dbPath);
+        EnsureSirupTables(dbPath);
 
         File.WriteAllText(versionPath, SchemaVersion.ToString());
+
+        SirupKomponentenSeeder.Seed();
+        SirupRezepturSeeder.Seed();
+    }
+
+    // Legt die Siruprechner-Tabellen an, falls sie in einer bestehenden (älteren) DB noch fehlen —
+    // EnsureCreated() legt neue Tabellen nur bei einer komplett neuen DB-Datei an.
+    private static void EnsureSirupTables(string dbPath)
+    {
+        using var connection = new SqliteConnection($"Data Source={dbPath}");
+        connection.Open();
+
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS ""SirupKomponenten"" (
+                ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_SirupKomponenten"" PRIMARY KEY AUTOINCREMENT,
+                ""Name"" TEXT NOT NULL,
+                ""Typ"" TEXT NOT NULL,
+                ""Alkoholgehalt"" REAL NOT NULL,
+                ""DosierungsempfehlungMlProLiter"" REAL NOT NULL,
+                ""Bemerkung"" TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS ""SirupRezepturen"" (
+                ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_SirupRezepturen"" PRIMARY KEY AUTOINCREMENT,
+                ""Name"" TEXT NOT NULL,
+                ""Erstellungsdatum"" TEXT NOT NULL,
+                ""Bemerkungen"" TEXT NOT NULL,
+                ""GrundmengeMl"" REAL NOT NULL,
+                ""WasserMl"" REAL NOT NULL,
+                ""ZuckerG"" REAL NOT NULL,
+                ""ZitronensaeureG"" REAL NOT NULL,
+                ""VerduennungTeileSirup"" REAL NOT NULL,
+                ""VerduennungTeileSodawasser"" REAL NOT NULL,
+                ""SirupMengeVerduennungMl"" REAL NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS ""SirupPositionen"" (
+                ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_SirupPositionen"" PRIMARY KEY AUTOINCREMENT,
+                ""SirupRezepturId"" INTEGER NOT NULL,
+                ""Typ"" TEXT NOT NULL,
+                ""KomponenteId"" INTEGER NULL,
+                ""ManuelleBezeichnung"" TEXT NOT NULL,
+                ""ManuellerAlkoholgehalt"" REAL NOT NULL,
+                ""MengeMl"" REAL NOT NULL,
+                CONSTRAINT ""FK_SirupPositionen_SirupRezepturen_SirupRezepturId"" FOREIGN KEY (""SirupRezepturId"") REFERENCES ""SirupRezepturen"" (""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_SirupPositionen_SirupKomponenten_KomponenteId"" FOREIGN KEY (""KomponenteId"") REFERENCES ""SirupKomponenten"" (""Id"") ON DELETE SET NULL
+            );";
+        cmd.ExecuteNonQuery();
     }
 
     // Fügt fehlende Spalten hinzu — löscht niemals Daten

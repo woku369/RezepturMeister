@@ -1,0 +1,376 @@
+<UserControl x:Class="RezepturMeister.Views.SirupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:RezepturMeister.Views"
+             xmlns:vm="clr-namespace:RezepturMeister.ViewModels"
+             xmlns:conv="clr-namespace:RezepturMeister.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1100">
+    <UserControl.Resources>
+        <conv:DecimalConverter x:Key="DecimalConverter" />
+        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <vm:SirupViewModel />
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Linke Seite: Rezepturliste -->
+        <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <WrapPanel Margin="5,6,5,4">
+                    <Button Command="{Binding NeueRezepturCommand}" Margin="0,0,5,4">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE710;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Neu"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding EditRezepturCommand}" Margin="0,0,5,4"
+                            Style="{StaticResource SecondaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE70F;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Bearbeiten"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding DeleteRezepturCommand}" Margin="0,0,5,4"
+                            Style="{StaticResource DangerButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE74D;"/>
+                            <TextBlock Style="{StaticResource BtnLabel}" Text="Löschen"/>
+                        </StackPanel>
+                    </Button>
+                </WrapPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,0,5,4">
+                    <TextBlock Text="Suche:" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox Text="{Binding SuchText, UpdateSourceTrigger=PropertyChanged}"
+                             Width="140" VerticalAlignment="Center"/>
+                    <Button Command="{Binding ClearSuchTextCommand}"
+                            Margin="4,0,0,0" Padding="5,2" ToolTip="Filter zurücksetzen">
+                        <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE8BB;" Margin="0"/>
+                    </Button>
+                </StackPanel>
+                <DataGrid Grid.Row="2" Margin="5" ItemsSource="{Binding RezepturenView}"
+                          SelectedItem="{Binding SelectedRezeptur}" AutoGenerateColumns="False" CanUserAddRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Datum" Binding="{Binding Erstellungsdatum, StringFormat=d}" Width="80"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <!-- Rechte Seite: Editor -->
+        <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="5">
+            <ScrollViewer>
+                <StackPanel Margin="14" Visibility="{Binding CurrentRezeptur, Converter={StaticResource NullToVisibilityConverter}}">
+
+                    <TextBlock Text="Siruprechner" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Name:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding CurrentRezeptur.Name}" Margin="5,0,0,0"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Datum:" VerticalAlignment="Center"/>
+                        <DatePicker Grid.Column="1" SelectedDate="{Binding CurrentRezeptur.Erstellungsdatum}" Margin="5,0,0,0"/>
+                    </Grid>
+                    <TextBlock Text="Bemerkungen:" Margin="0,4,0,4"/>
+                    <TextBox Text="{Binding CurrentRezeptur.Bemerkungen}" Height="44" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,14"/>
+
+                    <!-- ══════════════ BLOCK 1: BASISSIRUP ══════════════ -->
+                    <Border Background="{StaticResource SurfaceAltBrush}" BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="1. Basissirup" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
+                            <TextBlock Text="Wasser, Zucker, Zitronensäure — Grundmenge des vorgelegten, unaromatisierten Sirups"
+                                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                            <UniformGrid Columns="4">
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Grundmenge (ml)" FontSize="11"/>
+                                    <TextBox Text="{Binding CurrentRezeptur.GrundmengeMl, Converter={StaticResource DecimalConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Wasser (ml)" FontSize="11"/>
+                                    <TextBox Text="{Binding CurrentRezeptur.WasserMl, Converter={StaticResource DecimalConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Zucker (g)" FontSize="11"/>
+                                    <TextBox Text="{Binding CurrentRezeptur.ZuckerG, Converter={StaticResource DecimalConverter}}"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Zitronensäure (g)" FontSize="11"/>
+                                    <TextBox Text="{Binding CurrentRezeptur.ZitronensaeureG, Converter={StaticResource DecimalConverter}}"/>
+                                </StackPanel>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ══════════════ BLOCK 2: MAZERATE / DESTILLATE ══════════════ -->
+                    <Border Background="{StaticResource SurfaceAltBrush}" BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="2. Mazerate und Destillate" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
+
+                            <TextBlock Text="Mazerate (ca. 53 % vol.) — max. 5" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <DataGrid ItemsSource="{Binding MazeratPositionen}" AutoGenerateColumns="False"
+                                      CanUserAddRows="False" CanUserDeleteRows="False" Height="130" Margin="0,0,0,4">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Komponente" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding DataContext.MazerateKomponenten, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                          SelectedValue="{Binding KomponenteId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          DisplayMemberPath="Name" SelectedValuePath="Id" IsEditable="False"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Alkohol (%)" Binding="{Binding ManuellerAlkoholgehalt, Converter={StaticResource DecimalConverter}}" Width="80"/>
+                                    <DataGridTextColumn Header="Menge (ml)" Binding="{Binding MengeMl, Converter={StaticResource DecimalConverter}}" Width="90"/>
+                                    <DataGridTemplateColumn Header="Vorschlag" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="übernehmen" FontSize="10" Padding="3,2"
+                                                        Style="{StaticResource SecondaryButton}"
+                                                        Command="{Binding DataContext.UebernehmeDosierungCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="" Width="36">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Padding="3,2"
+                                                        Style="{StaticResource DangerButton}"
+                                                        Command="{Binding DataContext.RemovePositionCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}">
+                                                    <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE738;" Margin="0"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button Command="{Binding AddMazeratCommand}" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE710;"/>
+                                    <TextBlock Style="{StaticResource BtnLabel}" Text="Mazerat hinzufügen"/>
+                                </StackPanel>
+                            </Button>
+
+                            <TextBlock Text="Destillate (ca. 75 % vol.) — max. 5" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <DataGrid ItemsSource="{Binding DestillatPositionen}" AutoGenerateColumns="False"
+                                      CanUserAddRows="False" CanUserDeleteRows="False" Height="130" Margin="0,0,0,4">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Komponente" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox ItemsSource="{Binding DataContext.DestillateKomponenten, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                          SelectedValue="{Binding KomponenteId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          DisplayMemberPath="Name" SelectedValuePath="Id" IsEditable="False"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Alkohol (%)" Binding="{Binding ManuellerAlkoholgehalt, Converter={StaticResource DecimalConverter}}" Width="80"/>
+                                    <DataGridTextColumn Header="Menge (ml)" Binding="{Binding MengeMl, Converter={StaticResource DecimalConverter}}" Width="90"/>
+                                    <DataGridTemplateColumn Header="Vorschlag" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="übernehmen" FontSize="10" Padding="3,2"
+                                                        Style="{StaticResource SecondaryButton}"
+                                                        Command="{Binding DataContext.UebernehmeDosierungCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="" Width="36">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Padding="3,2"
+                                                        Style="{StaticResource DangerButton}"
+                                                        Command="{Binding DataContext.RemovePositionCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}">
+                                                    <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE738;" Margin="0"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button Command="{Binding AddDestillatCommand}" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE710;"/>
+                                    <TextBlock Style="{StaticResource BtnLabel}" Text="Destillat hinzufügen"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Margin="0,4,0,8"/>
+                            <TextBlock Text="{Binding Ergebnis.GesamtvolumenSirupMl, StringFormat='Gesamtvolumen Sirup: {0:F1} ml'}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Ergebnis.AbvSirup, StringFormat='Alkoholgehalt Sirup: {0:F2} % vol.'}" FontWeight="SemiBold" Margin="0,3,0,0"
+                                       ToolTip="Der Alkoholgehalt des unverdünnten Sirups ist für die Einstufung nicht relevant — entscheidend ist der End-Alkoholgehalt nach der Verdünnung (Block 3)."/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ══════════════ BLOCK 3: VERDÜNNUNG ══════════════ -->
+                    <Border Background="{StaticResource SurfaceAltBrush}" BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,14">
+                        <StackPanel>
+                            <TextBlock Text="3. Verdünnung mit Sodawasser" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
+                            <TextBlock Text="1 Teil Sirup + 6 Teile Sodawasser — für die Einstufung 'alkoholfrei' muss der End-Alkoholgehalt unter 0,5 % vol. liegen."
+                                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,8" TextWrapping="Wrap"/>
+
+                            <UniformGrid Columns="4" Margin="0,0,0,10">
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Teile Sirup" FontSize="11"/>
+                                    <TextBox Text="{Binding CurrentRezeptur.VerduennungTeileSirup, Converter={StaticResource DecimalConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Teile Sodawasser" FontSize="11"/>
+                                    <TextBox Text="{Binding CurrentRezeptur.VerduennungTeileSodawasser, Converter={StaticResource DecimalConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Sirupmenge (ml)" FontSize="11"/>
+                                    <TextBox Text="{Binding CurrentRezeptur.SirupMengeVerduennungMl, Converter={StaticResource DecimalConverter}}"/>
+                                </StackPanel>
+                                <StackPanel VerticalAlignment="Bottom">
+                                    <Button Command="{Binding GanzeChargeUebernehmenCommand}" Style="{StaticResource SecondaryButton}"
+                                            ToolTip="Übernimmt das gesamte Sirupvolumen aus Block 2 als Sirupmenge">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource BtnLabel}" Text="Ganze Charge"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </UniformGrid>
+
+                            <TextBlock Text="{Binding Ergebnis.SodawasserMl, StringFormat='Sodawasser: {0:F1} ml'}"/>
+                            <TextBlock Text="{Binding Ergebnis.GesamtGetraenkMl, StringFormat='Gesamt Getränk: {0:F1} ml'}" Margin="0,3,0,0"/>
+                            <TextBlock Text="{Binding Ergebnis.EndAbv, StringFormat='End-Alkoholgehalt: {0:F3} % vol.'}" FontWeight="Bold" FontSize="14" Margin="0,8,0,0"/>
+
+                            <Border Margin="0,8,0,0" Padding="8,5" CornerRadius="5" HorizontalAlignment="Left">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#D9EFE1"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Ergebnis.Ampel}" Value="Gelb">
+                                                <Setter Property="Background" Value="#FBF0CC"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Ergebnis.Ampel}" Value="Rot">
+                                                <Setter Property="Background" Value="#F6DADA"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="✓ alkoholfrei (&lt; 0,5 % vol.)"/>
+                                            <Setter Property="Foreground" Value="#1A6B45"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Ergebnis.Ampel}" Value="Gelb">
+                                                    <Setter Property="Text" Value="⚠ knapp alkoholfrei — Puffer prüfen (nahe 0,5 % vol.)"/>
+                                                    <Setter Property="Foreground" Value="#8A6D1A"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Ergebnis.Ampel}" Value="Rot">
+                                                    <Setter Property="Text" Value="✗ NICHT alkoholfrei (≥ 0,5 % vol.)"/>
+                                                    <Setter Property="Foreground" Value="#A81E1E"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <Button Command="{Binding SaveRezepturCommand}" Margin="0,0,10,0"
+                                Style="{StaticResource SaveButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE74E;"/>
+                                <TextBlock Style="{StaticResource BtnLabel}" Text="Speichern"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding CancelEditCommand}" Margin="0,0,10,0"
+                                Style="{StaticResource SecondaryButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE8FB;"/>
+                                <TextBlock Style="{StaticResource BtnLabel}" Text="Abbrechen"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding ExportXlsxCommand}"
+                                Style="{StaticResource SecondaryButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE9D2;"/>
+                                <TextBlock Style="{StaticResource BtnLabel}" Text="Export Excel"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- ══════════════ KOMPONENTEN-DATENBANK ══════════════ -->
+                    <Expander Header="Komponenten-Datenbank verwalten (Mazerate/Destillate)" IsExpanded="False" Margin="0,0,0,20">
+                        <StackPanel Margin="0,10,0,0">
+                            <DataGrid ItemsSource="{Binding VerfuegbareKomponenten}" SelectedItem="{Binding SelectedKomponente}"
+                                      AutoGenerateColumns="False" CanUserAddRows="False" Height="180" Margin="0,0,0,8">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                    <DataGridComboBoxColumn Header="Typ" SelectedItemBinding="{Binding Typ}" Width="90">
+                                        <DataGridComboBoxColumn.ItemsSource>
+                                            <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                                <sys:String>Mazerat</sys:String>
+                                                <sys:String>Destillat</sys:String>
+                                            </x:Array>
+                                        </DataGridComboBoxColumn.ItemsSource>
+                                    </DataGridComboBoxColumn>
+                                    <DataGridTextColumn Header="Alkohol (%)" Binding="{Binding Alkoholgehalt, Converter={StaticResource DecimalConverter}}" Width="80"/>
+                                    <DataGridTextColumn Header="Dosierung (ml/l)" Binding="{Binding DosierungsempfehlungMlProLiter, Converter={StaticResource DecimalConverter}}" Width="100"/>
+                                    <DataGridTextColumn Header="Bemerkung" Binding="{Binding Bemerkung}" Width="140"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{Binding AddKomponenteCommand}" Margin="0,0,8,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE710;"/>
+                                        <TextBlock Style="{StaticResource BtnLabel}" Text="Hinzufügen"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding SaveKomponenteCommand}" Margin="0,0,8,0" Style="{StaticResource SaveButton}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE74E;"/>
+                                        <TextBlock Style="{StaticResource BtnLabel}" Text="Speichern"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding DeleteKomponenteCommand}" Style="{StaticResource DangerButton}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE74D;"/>
+                                        <TextBlock Style="{StaticResource BtnLabel}" Text="Löschen"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Expander>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
