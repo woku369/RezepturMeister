@@ -6,13 +6,16 @@ Eine Windows Desktop-Anwendung zur Verwaltung von Rezepturen für die Herstellun
 
 ## Funktionen
 
-- **Rohstoffdatenbank**: Verwaltung von Zutaten mit Kategorien, Dichte, Alkoholgehalt und erweiterbaren Eigenschaften.
-- **Rezepturerstellung**: Erstellung von Rezepturen aus Rohstoffen oder manuellen Zutaten mit Mengen in g oder ml.
-- **Berechnungen**: Automatische Berechnung von Summen und prozentualen Anteilen (Gewichtsanteil je Zutat, Gesamtalkohol).
+- **Rohstoffdatenbank**: Verwaltung von Zutaten mit Kategorien, Dichte, Alkoholgehalt, Preis, Lieferant, verknüpftem Datenblatt (PDF/XLSX) und erweiterbaren Eigenschaften.
+- **Rezepturerstellung**: Erstellung von Rezepturen aus Rohstoffen oder manuellen Zutaten mit Mengen in g oder ml, inkl. Name und Produktgruppe (z.B. „Spirituose", „Weinhaltiges Getränk").
+- **Berechnungen**: Automatische Berechnung von Summen und prozentualen Anteilen (Gewichtsanteil je Zutat, Gesamtalkohol, Rohstoffkosten).
 - **Versionierung**: Unterrezepturen für Verfeinerungen (z.B. 1.0 → 1.1 → 1.2).
+- **Nährwertdeklaration**: Berechnung der Nährwerte je Rezeptur aus den Rohstoffdaten, PDF- und Excel-Export.
+- **Import**: Rezepturen aus CSV-Datei einlesen.
 - **Suche & Filter**: Live-Filter in Rohstoff- und Rezepturliste.
 - **Export**: PDF- und XLSX-Export für Rohstoff- und Rezepturlisten.
 - **Druck**: Ganzseitiger Druck von Rezepturen auf DIN A4.
+- **Benutzerhandbuch**: Integriertes Hilfe-Fenster (F1) mit Bedienungsanleitung.
 
 ## Technologien
 
@@ -75,14 +78,14 @@ dotnet test RezepturMeister.Tests/RezepturMeister.Tests.csproj
 ## Projektstruktur
 
 ```
-Models/         Rohstoff.cs, Rezeptur.cs (inkl. Zutat)
+Models/         Rohstoff.cs, Rezeptur.cs (inkl. Zutat), NaehrwertErgebnis.cs
 Data/           AppDbContext.cs  →  DB: AppContext.BaseDirectory/rezepturmeister.db
-Services/       RohstoffService, RezepturService, ExportService
+Services/       RohstoffService, RezepturService, NaehrwertService, ExportService
 ViewModels/     RohstoffViewModel, RezepturViewModel, MainViewModel
-Views/          RohstoffView.xaml, RezepturView.xaml
+Views/          RohstoffView.xaml, RezepturView.xaml, HelpWindow.xaml
 Converters/     DecimalConverter, NullToVisibilityConverter, PercentageConverter
 Themes/         AppTheme.xaml  (Farbpalette, Button/DataGrid/Tab-Styles)
-RezepturMeister.Tests/  xUnit-Tests (17 Tests)
+RezepturMeister.Tests/  xUnit-Tests (18 Tests)
 publish/        Fertige Release-Version (Single-File EXE + 6 native DLLs)
 ```
 
@@ -94,11 +97,18 @@ publish/        Fertige Release-Version (Single-File EXE + 6 native DLLs)
 - [x] Basis-UI für Rohstoffe und Rezepturen
 - [x] CRUD-Operationen für Rohstoffe und Rezepturen
 - [x] Rezepturerstellungslogik mit Versionierung
-- [x] Berechnungsfunktionen (Gewicht, Prozentanteile, Alkohol)
+- [x] Berechnungsfunktionen (Gewicht, Prozentanteile, Alkohol, Rohstoffkosten)
 - [x] Exportfunktionen (PDF, XLSX, Druck)
 - [x] Suchfilter für Rohstoffe und Rezepturen
 - [x] Eingabevalidierung
-- [x] Unit-Tests (17 Tests)
+- [x] Unit-Tests (18 Tests)
 - [x] UI-Design (dezentes appübergreifendes Theme, Header, Hover-Effekte)
 - [x] Release v1.0.0 (Single-File EXE, portabel)
-- [ ] Benutzerhandbuch
+- [x] Benutzerhandbuch (integriertes Hilfe-Fenster)
+- [x] Nährwertdeklaration (Berechnung + PDF-/Excel-Export)
+- [x] CSV-Import für Rezepturen
+- [x] Rohstoff-Felder Preis, Lieferant, Datenblatt-Verknüpfung
+- [x] Rezeptur-Feld Produktgruppe (freie Kategorisierung, z.B. für weinbasierte Getränke)
+- [x] DB-Schema-Migration ohne Datenverlust (`schema_version` + `ALTER TABLE`)
+
+Vollständige, chronologische Historie inkl. aller Zwischenschritte und Bugfixes: siehe [`ROADMAP.md`](ROADMAP.md).
