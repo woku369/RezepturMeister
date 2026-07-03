@@ -122,6 +122,21 @@
 - [x] **Hilfe-Button** im App-Header (Segoe MDL2 Icon `E897`, Tooltip, F1-Hinweis)
 - [x] **HelpButton_Click** in `MainWindow.xaml.cs` — öffnet `HelpWindow` als modales Fenster
 
+## Phase 12: Alpen-Spritz-Rezepturdaten (Abgeschlossen)
+- [x] **`RohstoffSeeder` angereichert**: reale Kategorie/Alkoholgehalt/Preis-Daten aus dem
+  Alpen-Spritz-Projektwissen (Stand 03.07.2026) für alle 11 bestehenden Rohstoffe ergänzt
+  (Preise aus `COGS_Gurktaler2.xlsx`, Alpen-Aperitif-Einkauf), Upsert-Logik (überschreibt keine
+  bereits kategorisierten/bearbeiteten Datensätze)
+- [x] **Neue Rohstoffe**: „Wasser", „Wein (Alpen-Spritz Weinbasis)", „Sanddorndestillat",
+  „Kräuterdestillat (Alpen-Spritz Weinbasis)" für die Weinbasis-Reformulierung angelegt
+  (Planpreise/Status in `ZusatzlicheEigenschaften` dokumentiert, da noch nicht final verhandelt)
+- [x] **`RezepturSeeder` neu erstellt**: Rezeptur 1.0 „Alpen-Spritz (Original,
+  Neutralalkohol-Basis)" und 1.1 „Alpen-Spritz Weinbasis (Rebsorte/Lieferant offen)" mit
+  vollständigen Zutatenlisten (je 1.000 g Ansatz, Summenprobe bestätigt: 1000,0 g)
+- [x] Offene Punkte aus dem Projektwissen (Ziel-ABV nur sensorisch entscheidbar, Destillate
+  rechtlich noch nicht AGES-geprüft, Wein-Rebsorte/-Lieferant offen, E110-Dosierung offen) als
+  Klartext in `Rezeptur.Bemerkungen` übernommen statt stillschweigend aufgelöst
+
 ## Offene Themen / Backlog
 
 - [ ] Endprodukt-Tabelle als eigenes Model (aktuell: Rezeptur = Endprodukt-Näherung)
