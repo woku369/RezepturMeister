@@ -73,6 +73,11 @@ public class ExportService
         gfx.DrawString($"Datum:  {rezeptur.Erstellungsdatum:d}", fontNormal, XBrushes.Black, new XPoint(40, y));
         y += 15;
         gfx.DrawString($"Charge: {rezeptur.Chargennummer}",      fontNormal, XBrushes.Black, new XPoint(40, y));
+        if (!string.IsNullOrWhiteSpace(rezeptur.Produktgruppe))
+        {
+            y += 15;
+            gfx.DrawString($"Produktgruppe: {rezeptur.Produktgruppe}", fontNormal, XBrushes.Black, new XPoint(40, y));
+        }
         if (!string.IsNullOrWhiteSpace(rezeptur.Bemerkungen))
         {
             y += 15;
@@ -167,14 +172,15 @@ public class ExportService
         ws.Cell(1, 1).Style.Font.FontSize = 14;
         ws.Cell(2, 1).Value = $"Datum: {rezeptur.Erstellungsdatum:d}";
         ws.Cell(3, 1).Value = $"Charge: {rezeptur.Chargennummer}";
-        ws.Cell(4, 1).Value = rezeptur.Bemerkungen;
+        ws.Cell(4, 1).Value = $"Produktgruppe: {rezeptur.Produktgruppe}";
+        ws.Cell(5, 1).Value = rezeptur.Bemerkungen;
 
-        ws.Cell(6, 1).Value = "Zutat";
-        ws.Cell(6, 2).Value = "Menge";
-        ws.Cell(6, 3).Value = "Einheit";
-        ws.Cell(6, 4).Value = "Anteil %";
-        ws.Row(6).Style.Font.Bold = true;
-        ws.Row(6).Style.Fill.BackgroundColor = XLColor.LightGray;
+        ws.Cell(7, 1).Value = "Zutat";
+        ws.Cell(7, 2).Value = "Menge";
+        ws.Cell(7, 3).Value = "Einheit";
+        ws.Cell(7, 4).Value = "Anteil %";
+        ws.Row(7).Style.Font.Bold = true;
+        ws.Row(7).Style.Fill.BackgroundColor = XLColor.LightGray;
 
         double gesamtMenge = rezeptur.Zutaten.Sum(z =>
         {
@@ -183,7 +189,7 @@ public class ExportService
             return m;
         });
 
-        int row = 7;
+        int row = 8;
         foreach (var zutat in rezeptur.Zutaten)
         {
             double gewicht = zutat.Menge;

@@ -59,7 +59,8 @@ public partial class RezepturViewModel : ObservableObject, IDisposable
             return r.Nummer.Contains(SuchText, StringComparison.OrdinalIgnoreCase)
                 || r.Name.Contains(SuchText, StringComparison.OrdinalIgnoreCase)
                 || r.Chargennummer.Contains(SuchText, StringComparison.OrdinalIgnoreCase)
-                || r.Bemerkungen.Contains(SuchText, StringComparison.OrdinalIgnoreCase);
+                || r.Bemerkungen.Contains(SuchText, StringComparison.OrdinalIgnoreCase)
+                || r.Produktgruppe.Contains(SuchText, StringComparison.OrdinalIgnoreCase);
         };
 
         LoadRezepturen();
@@ -146,6 +147,7 @@ public partial class RezepturViewModel : ObservableObject, IDisposable
                 Id = SelectedRezeptur.Id,
                 Nummer = SelectedRezeptur.Nummer,
                 Name = SelectedRezeptur.Name,
+                Produktgruppe = SelectedRezeptur.Produktgruppe,
                 Erstellungsdatum = SelectedRezeptur.Erstellungsdatum,
                 Chargennummer = SelectedRezeptur.Chargennummer,
                 Bemerkungen = SelectedRezeptur.Bemerkungen,
@@ -232,6 +234,7 @@ public partial class RezepturViewModel : ObservableObject, IDisposable
             {
                 Nummer = newNummer,
                 Name = SelectedRezeptur.Name,
+                Produktgruppe = SelectedRezeptur.Produktgruppe,
                 Erstellungsdatum = DateTime.Now,
                 Chargennummer = SelectedRezeptur.Chargennummer,
                 Bemerkungen = SelectedRezeptur.Bemerkungen,
@@ -453,7 +456,7 @@ public partial class RezepturViewModel : ObservableObject, IDisposable
         try
         {
             var lines = File.ReadAllLines(dialog.FileName);
-            // Erwartetes Format: Name;Nummer;Datum;Charge;Bemerkungen;
+            // Erwartetes Format: Name;Nummer;Datum;Charge;Bemerkungen;Produktgruppe;
             //                    ZutatName;Menge;Einheit
             var rezeptur = new Rezeptur
             {
@@ -474,6 +477,7 @@ public partial class RezepturViewModel : ObservableObject, IDisposable
                     case "datum":   if (DateTime.TryParse(parts[1].Trim(), out var d)) rezeptur.Erstellungsdatum = d; break;
                     case "charge":  rezeptur.Chargennummer = parts[1].Trim(); break;
                     case "bemerkung": rezeptur.Bemerkungen = parts[1].Trim(); break;
+                    case "produktgruppe": rezeptur.Produktgruppe = parts[1].Trim(); break;
                     default:
                         // Zutat: Rohstoffname;Menge;Einheit
                         if (parts.Length >= 3 && double.TryParse(parts[1].Trim().Replace(',', '.'),
@@ -527,6 +531,8 @@ public partial class RezepturViewModel : ObservableObject, IDisposable
             { FontSize = 16, FontWeight = FontWeights.Bold, Margin = new System.Windows.Thickness(0, 0, 0, 4) });
         doc.Blocks.Add(new Paragraph(new Run($"Datum:  {SelectedRezeptur.Erstellungsdatum:d}")));
         doc.Blocks.Add(new Paragraph(new Run($"Charge: {SelectedRezeptur.Chargennummer}")));
+        if (!string.IsNullOrWhiteSpace(SelectedRezeptur.Produktgruppe))
+            doc.Blocks.Add(new Paragraph(new Run($"Produktgruppe: {SelectedRezeptur.Produktgruppe}")));
         if (!string.IsNullOrWhiteSpace(SelectedRezeptur.Bemerkungen))
             doc.Blocks.Add(new Paragraph(new Run($"Bemerkungen: {SelectedRezeptur.Bemerkungen}")));
 

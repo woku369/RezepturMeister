@@ -14,6 +14,11 @@ public class Rezeptur
 
     public string Name { get; set; } = string.Empty; // Rezepturname
 
+    // Freitext, z.B. "Spirituosenmischgetränk", "Aromatisiertes weinhaltiges Getränk" —
+    // erlaubt die Abbildung strukturell unterschiedlicher Produktgruppen (z.B. weinbasierte
+    // Getränke neben klassischen Spirituosen) ohne starre Kategorienliste.
+    public string Produktgruppe { get; set; } = string.Empty;
+
     [Required]
     public DateTime Erstellungsdatum { get; set; }
 

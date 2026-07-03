@@ -136,6 +136,16 @@
 - [x] Offene Punkte aus dem Projektwissen (Ziel-ABV nur sensorisch entscheidbar, Destillate
   rechtlich noch nicht AGES-geprüft, Wein-Rebsorte/-Lieferant offen, E110-Dosierung offen) als
   Klartext in `Rezeptur.Bemerkungen` übernommen statt stillschweigend aufgelöst
+- [x] **Neues Feld `Rezeptur.Produktgruppe`** (Freitext, analog zu `Rohstoff.Kategorie`): erlaubt
+  die Abbildung strukturell unterschiedlicher Produktgruppen (z. B. weinbasierte Getränke neben
+  klassischen Spirituosen) in derselben Rezepturliste, statt sie nur in Bemerkungen zu verstecken
+  - Editor-Feld + Listen-Spalte + Such-/Filtertext in `RezepturView.xaml`
+  - Wird bei „Bearbeiten" und „Unterversion" mitkopiert, im CSV-Import als neues Schlüsselwort
+    `produktgruppe` unterstützt
+  - Erscheint auf PDF-/Excel-Export und beim Drucken der Rezeptur
+  - Schemaversion 4 (`App.xaml.cs`), Spalte per `ALTER TABLE` nachgerüstet
+  - `RezepturSeeder`: 1.0 = „Spirituosenmischgetränk", 1.1 = „Weinhaltiges Getränk (finale
+    Kategorie noch offen, s. Bemerkungen)"
 
 ## Offene Themen / Backlog
 

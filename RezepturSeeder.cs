@@ -52,6 +52,7 @@ public static class RezepturSeeder
             context,
             nummer: "1.0",
             name: "Alpen-Spritz (Original, Neutralalkohol-Basis)",
+            produktgruppe: "Spirituosenmischgetränk",
             erstellungsdatum: new DateTime(2024, 10, 28),
             bemerkungen:
                 "Sachbezeichnung „Alkoholisches Mischgetränk mit Sanddornlikör (42 %)“. 250-ml-Dose, " +
@@ -64,6 +65,7 @@ public static class RezepturSeeder
             context,
             nummer: "1.1",
             name: "Alpen-Spritz Weinbasis (Rebsorte/Lieferant offen)",
+            produktgruppe: "Weinhaltiges Getränk (finale Kategorie noch offen, s. Bemerkungen)",
             erstellungsdatum: new DateTime(2026, 7, 3),
             bemerkungen:
                 "Reformulierung auf Weinbasis, Ziel: Wegfall der Alkoholsteuer (AlkStG 2022 nicht " +
@@ -85,6 +87,7 @@ public static class RezepturSeeder
         AppDbContext context,
         string nummer,
         string name,
+        string produktgruppe,
         DateTime erstellungsdatum,
         string bemerkungen,
         ZutatDaten[] zutaten)
@@ -96,6 +99,7 @@ public static class RezepturSeeder
         {
             Nummer = nummer,
             Name = name,
+            Produktgruppe = produktgruppe,
             Erstellungsdatum = erstellungsdatum,
             Chargennummer = string.Empty,
             Bemerkungen = bemerkungen

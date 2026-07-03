@@ -110,7 +110,7 @@
                     <TextBlock Text="Suche:" VerticalAlignment="Center" Margin="0,0,6,0"/>
                     <TextBox Text="{Binding SuchText, UpdateSourceTrigger=PropertyChanged}"
                              Width="160" VerticalAlignment="Center"
-                             ToolTip="Nach Nummer, Charge oder Bemerkungen filtern"/>
+                             ToolTip="Nach Name, Nummer, Charge, Bemerkungen oder Produktgruppe filtern"/>
                     <Button Command="{Binding ClearSuchTextCommand}"
                             Margin="4,0,0,0" Padding="5,2" ToolTip="Filter zurücksetzen">
                         <TextBlock Style="{StaticResource BtnIcon}" Text="&#xE8BB;" Margin="0"/>
@@ -120,6 +120,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
                         <DataGridTextColumn Header="Nummer" Binding="{Binding Nummer}" Width="70"/>
+                        <DataGridTextColumn Header="Produktgruppe" Binding="{Binding Produktgruppe}" Width="130"/>
                         <DataGridTextColumn Header="Datum" Binding="{Binding Erstellungsdatum, StringFormat=d}" Width="80"/>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -141,6 +142,16 @@
                         <TextBlock Text="Name:" VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1" Text="{Binding CurrentRezeptur.Name}" Margin="5,0,0,0"
                                  ToolTip="Produktname der Rezeptur (z.B. 'Gurktaler Kräuter 38%')"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Produktgruppe:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" Text="{Binding CurrentRezeptur.Produktgruppe}" Margin="5,0,0,0"
+                                 ToolTip="Freitext zur Einordnung, z.B. 'Spirituosenmischgetränk' oder 'Aromatisiertes weinhaltiges Getränk' — ermöglicht auch strukturell andere Produktgruppen wie weinbasierte Getränke"/>
                     </Grid>
 
                     <Grid Margin="0,0,0,10">

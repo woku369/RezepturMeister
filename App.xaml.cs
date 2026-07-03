@@ -13,7 +13,7 @@ namespace RezepturMeister;
 /// </summary>
 public partial class App : Application
 {
-    private const int SchemaVersion = 3; // Phase 8: Nährwertdaten pro Rohstoff
+    private const int SchemaVersion = 4; // Phase 12: Produktgruppe pro Rezeptur
 
     public App()
     {
@@ -84,6 +84,9 @@ public partial class App : Application
         AddColumnIfMissing(connection, "Zutaten", zutaten, "ManuelleDichte",          "REAL NOT NULL DEFAULT 0.0");
         AddColumnIfMissing(connection, "Zutaten", zutaten, "ManuellerAlkoholgehalt",  "REAL NOT NULL DEFAULT 0.0");
         AddColumnIfMissing(connection, "Zutaten", zutaten, "Prozent",                 "REAL NOT NULL DEFAULT 0.0");
+
+        var rezepturen = GetColumns(connection, "Rezepturen");
+        AddColumnIfMissing(connection, "Rezepturen", rezepturen, "Produktgruppe",     "TEXT NOT NULL DEFAULT ''");
     }
 
     private static HashSet<string> GetColumns(SqliteConnection connection, string table)
