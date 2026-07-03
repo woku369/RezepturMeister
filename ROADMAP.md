@@ -154,3 +154,9 @@
 - [ ] Chargenprotokoll (Produktionshistorie)
 - [ ] Mehrsprachigkeit (de/en)
 - [ ] Einheit „l" und „kg" für Preis unterscheiden (aktuell ein einziges Preisfeld)
+- [ ] **Gesetzeskonforme Kategorieliste für `Rezeptur.Produktgruppe`** (statt Freitext): feste
+  Auswahl der tatsächlich einschlägigen Produktkategorien (z. B. Spirituose, aromatisiertes
+  weinhaltiges Getränk, aromatisierter weinhaltiger Cocktail) statt freier Texteingabe — verhindert
+  Tippfehler/Varianten und bildet die Produkteinordnung nach den jeweils geltenden
+  Kategoriedefinitionen ab. Kein Rechtsmodul in RezepturMeister selbst — nur die Auswahlliste,
+  die inhaltliche Pflege der Kategorien/Grenzwerte bleibt außerhalb dieses Projekts.
