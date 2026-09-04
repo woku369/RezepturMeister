@@ -1,0 +1,43 @@
+name: Android – Nährwertrechner Build
+
+on:
+  push:
+    paths:
+      - "android/naehrwertrechner/**"
+      - ".github/workflows/android-build.yml"
+  pull_request:
+    paths:
+      - "android/naehrwertrechner/**"
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    working-directory: android/naehrwertrechner
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 17 einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Gradle cachen
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit-Tests ausführen
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Debug-APK bauen
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: APK als Artefakt hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: naehrwertrechner-debug-apk
+          path: android/naehrwertrechner/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

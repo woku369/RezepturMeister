@@ -67,6 +67,22 @@ verifizieren, bevor sie für eine echte Kennzeichnung verwendet werden.
 - `ui/`: `NaehrwertViewModel`, drei Compose-Screens (Zutaten-Eingabe,
   Rohstoffliste, Ergebnis)
 
+## APK bauen
+
+**Ohne eigene Installation (empfohlen):** Der Workflow
+`.github/workflows/android-build.yml` baut bei jedem Push in diesen Ordner
+automatisch eine Debug-APK und führt die Unit-Tests aus (GitHub-Runner haben
+normalen Internetzugang, das Netzwerkproblem der Entwicklungssitzung entfällt
+dort). Die fertige APK liegt danach unter GitHub → Reiter **Actions** → den
+jeweiligen Lauf öffnen → Abschnitt **Artifacts** → `naehrwertrechner-debug-apk`
+herunterladen (ZIP mit der `.apk` darin). Schlägt der Build fehl, steht der
+Fehler im Log des jeweiligen Schritts.
+
+**Lokal mit Android Studio:** Projekt-Ordner `android/naehrwertrechner/` in
+Android Studio öffnen, Gradle-Sync abwarten, dann
+`Build → Build Bundle(s)/APK(s) → Build APK(s)`. Die APK landet in
+`app/build/outputs/apk/debug/app-debug.apk`.
+
 ## Bekannte Einschränkung dieser Erstanlage
 
 Die Entwicklungsumgebung, in der dieses Grundgerüst erstellt wurde, hatte
