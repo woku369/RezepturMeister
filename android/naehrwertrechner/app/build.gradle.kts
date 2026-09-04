@@ -86,6 +86,10 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
+    // Schlanker, reiner Java-XLSX-Writer ohne Apache-POI-Ballast (POI hat auf
+    // Android bekannte Kompatibilitätsprobleme). Nur Schreibzugriff nötig.
+    implementation("org.dhatim:fastexcel:0.18.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

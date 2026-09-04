@@ -72,6 +72,13 @@ verifizieren, bevor sie für eine echte Kennzeichnung verwendet werden.
   `NaehrwertDeklarationFormatter` (Textausgabe in Anhang-XV-Reihenfolge)
 - `ui/`: `NaehrwertViewModel`, drei Compose-Screens (Zutaten-Eingabe,
   Rohstoffliste, Ergebnis)
+- `export/`: `XlsxExporter` – Button "Als Excel (.xlsx) exportieren" im
+  Ergebnis-Screen erzeugt eine Arbeitsmappe (Blatt 1: Nährwertdeklaration in
+  Anhang-XV-Reihenfolge, Blatt 2: Zutatenliste) und öffnet den
+  Android-Teilen-Dialog (Mail, Drive, lokal speichern, …) über einen
+  `FileProvider`. Nutzt die schlanke Bibliothek FastExcel statt Apache POI
+  (POI ist auf Android für diesen einfachen Schreibfall unnötig schwer und
+  hat bekannte Kompatibilitätsprobleme).
 
 ## APK bauen
 
