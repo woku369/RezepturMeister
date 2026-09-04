@@ -126,11 +126,13 @@ object SeedData {
         ),
         Rohstoff(
             name = "Zwiebel, roh", kategorie = "Gemüse",
-            energieKj = 167.0, energieKcal = 40.0, fett = 0.1, kohlenhydrate = 9.3, zucker = 4.2,
-            ballaststoffe = 1.7, eiweiss = 1.1,
+            energieKj = 167.0, energieKcal = 40.0, fett = 0.1, gesaettigteFettsaeuren = 0.0,
+            kohlenhydrate = 9.3, zucker = 4.2, ballaststoffe = 1.7, eiweiss = 1.1, salz = 0.0,
             quelle = NaehrwertQuelle.USDA,
             quelleHinweis = "$QUELLE_USDA_HINWEIS Zuckerwert (4,2 g) September 2026 ergänzt " +
-                "(vorherige Recherche hatte hier fälschlich Ballaststoffe statt Zucker geliefert)."
+                "(vorherige Recherche hatte hier fälschlich Ballaststoffe statt Zucker geliefert). " +
+                "Salz und gesättigte Fettsäuren auf Nutzerwunsch als vernachlässigbar auf 0 gesetzt " +
+                "statt weiter zu recherchieren (bei 0,1 g Gesamtfett ohnehin kaum relevant)."
         ),
         Rohstoff(
             name = "Tomate, roh", kategorie = "Gemüse",
@@ -156,26 +158,31 @@ object SeedData {
         ),
         Rohstoff(
             name = "Thymian, getrocknet", kategorie = "Gewürz/Kräuter",
-            energieKj = 1155.0, energieKcal = 276.0, fett = 7.43, kohlenhydrate = 63.94,
-            ballaststoffe = 37.0, eiweiss = 9.11,
-            quelle = NaehrwertQuelle.USDA, quelleHinweis = QUELLE_USDA_HINWEIS
+            energieKj = 1155.0, energieKcal = 276.0, fett = 7.43, gesaettigteFettsaeuren = 0.0,
+            kohlenhydrate = 63.94, zucker = 0.0, ballaststoffe = 37.0, eiweiss = 9.11, salz = 0.0,
+            quelle = NaehrwertQuelle.USDA,
+            quelleHinweis = "$QUELLE_USDA_HINWEIS Salz und gesättigte Fettsäuren auf Nutzerwunsch " +
+                "als vernachlässigbar auf 0 gesetzt. Zuckerwert war in den Suchtreffern nicht " +
+                "ausgewiesen – aus Konsistenz zur selben Vereinfachung ebenfalls auf 0 gesetzt " +
+                "statt offen zu lassen (Einsatzmenge typischerweise wenige Gramm)."
         ),
         Rohstoff(
             name = "Zimt, gemahlen", kategorie = "Gewürz/Kräuter",
-            energieKj = 1035.0, energieKcal = 247.0, fett = 1.2, kohlenhydrate = 80.6, zucker = 2.2,
-            ballaststoffe = 53.1, eiweiss = 4.0,
-            quelle = NaehrwertQuelle.USDA, quelleHinweis = QUELLE_USDA_HINWEIS
+            energieKj = 1035.0, energieKcal = 247.0, fett = 1.2, gesaettigteFettsaeuren = 0.0,
+            kohlenhydrate = 80.6, zucker = 2.2, ballaststoffe = 53.1, eiweiss = 4.0, salz = 0.0,
+            quelle = NaehrwertQuelle.USDA,
+            quelleHinweis = "$QUELLE_USDA_HINWEIS Salz und gesättigte Fettsäuren auf Nutzerwunsch " +
+                "als vernachlässigbar auf 0 gesetzt."
         ),
         Rohstoff(
             name = "Kreuzkümmel, gemahlen", kategorie = "Gewürz/Kräuter",
-            energieKj = 1708.0, energieKcal = 408.0, fett = 22.27, kohlenhydrate = 34.0, zucker = 6.8,
-            ballaststoffe = 10.5, eiweiss = 17.8, salz = 0.53,
+            energieKj = 1708.0, energieKcal = 408.0, fett = 22.27, gesaettigteFettsaeuren = 0.0,
+            kohlenhydrate = 34.0, zucker = 6.8, ballaststoffe = 10.5, eiweiss = 17.8, salz = 0.0,
             quelle = NaehrwertQuelle.USDA,
-            quelleHinweis = "$QUELLE_USDA_HINWEIS Salzwert aus Natriumangabe (0,21 g/100 g) über " +
-                "die Standardumrechnung Salz = Natrium × 2,5 abgeleitet. Ein gefundener Wert für " +
-                "gesättigte Fettsäuren (0,1 g) wirkte im Verhältnis zu 22,27 g Gesamtfett " +
-                "unplausibel niedrig und wurde NICHT übernommen (NULL belassen), statt eine " +
-                "wahrscheinlich fehlerhafte Zahl zu verwenden."
+            quelleHinweis = "$QUELLE_USDA_HINWEIS Salz und gesättigte Fettsäuren auf Nutzerwunsch " +
+                "als vernachlässigbar auf 0 gesetzt (ersetzt den zuvor aus der Natriumangabe " +
+                "abgeleiteten Salzwert von 0,53 g – bei 5 g Einsatzmenge in einem 10-kg-Ansatz " +
+                "ohnehin nicht spürbar)."
         ),
         Rohstoff(
             name = "Schwarzkümmel, gemahlen", kategorie = "Gewürz/Kräuter",
@@ -211,19 +218,18 @@ object SeedData {
         // ---- Weitere Zutaten der zweiten Produktgruppe ----
         Rohstoff(
             name = "Speck (Bauchspeck, geräuchert)", kategorie = "Fleischprodukt",
-            energieKj = 1590.0, energieKcal = 380.0, fett = 33.3, kohlenhydrate = 0.0,
-            eiweiss = 16.7, salz = 2.5,
+            energieKj = 1557.0, energieKcal = 372.0, fett = 30.0, kohlenhydrate = 0.4,
+            eiweiss = 25.0,
             quelle = NaehrwertQuelle.WEBRECHERCHE,
-            quelleHinweis = "Mittelwert aus 3 unabhängigen, sich überschneidenden Websuche-Treffern " +
-                "September 2026 für geräucherten Bauchspeck (372 kcal/18,0 g Eiweiß/33,3 g Fett; " +
-                "320 kcal/16,0 g Eiweiß/28,9 g Fett; 405 kcal/16,1 g Eiweiß/37,8 g Fett/2,5 g Salz) – " +
-                "keine amtliche Quelle, Streuung ±25 kcal. Ein separater Treffer für ROHEN, ungeräucherten " +
-                "Bauchspeck (796 kcal, 88,7 g Fett, nur 2,9 g Eiweiß – praktisch reines Fettgewebe) wurde " +
-                "bewusst NICHT verwendet, da für Gemüsezubereitungen typischerweise der geräucherte, " +
-                "durchwachsene Speck mit Fleischanteil eingesetzt wird. Vor produktiver Nutzung durch das " +
-                "Etikett der tatsächlich eingekauften Speckware ersetzen – Salzgehalt schwankt stark je " +
-                "Pökelverfahren. Gesättigte Fettsäuren in keiner der Quellen ausgewiesen, daher NULL " +
-                "belassen (Rohstoff bleibt bis zur Etikettdaten-Übernahme als unvollständig markiert)."
+            quelleHinweis = "Auf Wunsch September 2026 umgestellt: die tatsächlich verwendete Ware " +
+                "kommt vom Fleischhauer und hat keine eigenen Nährwertangaben. Als Näherung wird " +
+                "stattdessen ein reales, verbreitetes Fertigprodukt herangezogen (Handl Tyrol " +
+                "Speckwürfel, 372 kcal – übereinstimmend bei Wikifit/Fatsecret/Fettrechner). " +
+                "Ersetzt den vorherigen Mittelwert aus 3 widersprüchlichen Websuche-Treffern " +
+                "(320-405 kcal). Salz und gesättigte Fettsäuren für dieses Produkt nicht gefunden, " +
+                "daher NULL belassen. Weicht die tatsächliche Fleischhauer-Ware deutlich ab (z. B. " +
+                "anderer Fettanteil, kein Pökelsalz), gegen ein passenderes Referenzprodukt oder " +
+                "eine externe Laboranalyse tauschen."
         ),
         Rohstoff(
             name = "Speck, geräuchert, ausgelassen (Grieben)", kategorie = "Fleischprodukt",
@@ -268,16 +274,18 @@ object SeedData {
         ),
         Rohstoff(
             name = "Pektin (Apfel-/Citruspektin, Pulver)", kategorie = "Geliermittel",
-            energieKj = 820.0, energieKcal = 196.0, fett = 1.0, kohlenhydrate = 44.5, zucker = 0.0,
-            ballaststoffe = 36.5, eiweiss = 2.3,
-            quelle = NaehrwertQuelle.WEBRECHERCHE,
-            quelleHinweis = "Websuche September 2026, Einzelquelle (Fddb, Handelsprodukt " +
-                "\"Apfelpektin Flocken\", kein Reinstoff-Pektin). Reines Pektinpulver ist praktisch " +
-                "100 % lösliche Ballaststoffe – Handelsprodukte werden aber häufig mit Traubenzucker " +
-                "gestreckt, um die Gelierkraft zu standardisieren, daher der Kohlenhydratanteil. " +
-                "Salz nicht ausgewiesen (0 angenommen ist hier NICHT belegt, daher NULL belassen). " +
-                "Für das konkret verwendete Produkt unbedingt Herstellerdatenblatt heranziehen, da " +
-                "der Streckungsgrad je Hersteller stark variiert."
+            energieKj = 800.0, energieKcal = 200.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
+            kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 100.0, eiweiss = 0.0, salz = 0.0,
+            quelle = NaehrwertQuelle.BERECHNET,
+            quelleHinweis = "Auf Wunsch September 2026 umgestellt: reines Pektinpulver (E440) ist " +
+                "chemisch nahezu 100 % löslicher Ballaststoff (ein Polysaccharid) – Energie daher " +
+                "über den bereits für Speiseessig verwendeten Anhang-XIV-Ballaststofffaktor " +
+                "(8 kJ/g bzw. 2 kcal/g) berechnet, analog zur Essigsäure-Methode. Ersetzt eine " +
+                "vorherige Einzelquelle (Fddb, Handelsprodukt \"Apfelpektin Flocken\": 196 kcal, " +
+                "44,5 g Kohlenhydrate, 36,5 g Ballaststoffe), die mit Traubenzucker gestrecktes " +
+                "Handelsprodukt zeigte statt Reinstoff-Pektin. Falls das konkret verwendete Produkt " +
+                "ebenfalls gestreckt ist, weichen die realen Werte davon ab – Herstellerdatenblatt " +
+                "prüfen."
         ),
         Rohstoff(
             name = "Rotwein, trocken", kategorie = "Sonstige Zutat",
@@ -288,7 +296,13 @@ object SeedData {
             quelleHinweis = "$QUELLE_WEB_HINWEIS Rotwein-Nährwerte streuen stark nach Sorte/" +
                 "Restzuckergehalt/Alkoholgehalt (Quellen nannten 0,8–2,6 g Kohlenhydrate/100 ml) – " +
                 "für die konkret verwendete Weinmarke Herstellerangabe verwenden. Energiewert enthält " +
-                "bereits den Alkoholanteil; alkoholGehaltVol dient nur der Kennzeichnung."
+                "bereits den Alkoholanteil; alkoholGehaltVol dient nur der Kennzeichnung. Laut Nutzer " +
+                "wird konkret Spar-Rotwein im Doppelliter (2-l-Gebinde) verwendet – dafür war online " +
+                "keine produktspezifische Nährwertangabe auffindbar (bei einfachen \"Doppler\"-Weinen " +
+                "seltener indiziert als bei Flaschenweinen). Da österreichische Wein-Kartons den " +
+                "Energiewert i. d. R. selbst aufdrucken, ist ein Blick auf das tatsächliche Gebinde " +
+                "hier schneller und verlässlicher als eine weitere Websuche – bitte dort ablesen und " +
+                "ersetzen, der obige Wert bleibt bis dahin ein allgemeiner Näherungswert."
         ),
 
         // ---- Fett/Öl ----
