@@ -18,7 +18,25 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        getByName("debug") {
+            // Fest eingecheckter Debug-Keystore (unkritisches Standard-Debug-Passwort,
+            // wie auch das von Android Studio generierte debug.keystore). Damit signieren
+            // ALLE Builds (lokal und CI) mit demselben Schlüssel – ohne das würde jeder
+            // GitHub-Actions-Lauf ein neues, zufälliges debug.keystore erzeugen, wodurch
+            // sich neue APKs nicht mehr als Update über eine bereits installierte
+            // Version installieren lassen ("Paket steht in Konflikt mit bestehendem Paket").
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

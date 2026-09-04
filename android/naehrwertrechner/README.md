@@ -84,6 +84,15 @@ jeweiligen Lauf öffnen → Abschnitt **Artifacts** → `naehrwertrechner-debug-
 herunterladen (ZIP mit der `.apk` darin). Schlägt der Build fehl, steht der
 Fehler im Log des jeweiligen Schritts.
 
+**Update über eine bereits installierte Version:** Alle Debug-Builds (CI wie
+lokal) werden mit dem fest eingecheckten `app/debug.keystore` signiert, damit
+sich eine neue APK als normales Update installieren lässt. Ausnahme: APKs aus
+den allerersten drei CI-Läufen (vor diesem Fix) hatten je einen zufälligen
+Signierschlüssel – kommt beim Installieren die Meldung *"Paket steht in
+Konflikt mit einem bestehenden Paket"*, einmalig die alte App deinstallieren
+(dabei gehen lokal gespeicherte Rezepturen/Rohstoffe verloren) und die neue
+APK frisch installieren. Ab jetzt sollte das nicht mehr nötig sein.
+
 **Lokal mit Android Studio:** Projekt-Ordner `android/naehrwertrechner/` in
 Android Studio öffnen, Gradle-Sync abwarten, dann
 `Build → Build Bundle(s)/APK(s) → Build APK(s)`. Die APK landet in
