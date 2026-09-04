@@ -36,18 +36,20 @@ ein Pflichtfeld `quelle` + `quelleHinweis`:
 
 - **BERECHNET**: rechnerisch eindeutig (Zucker, Salz, Wasser, verdünnte
   Speiseessige aus dem Anhang-XIV-Faktor für organische Säuren).
-- **USDA**: für die vier Rohgemüse (Gurke, Paprika, Chili, Zwiebel) – laut
-  Websuche über USDA FoodData Central, aber in dieser Sitzung nicht direkt an
-  der Primärquelle fdc.nal.usda.gov gegengeprüft (Netzwerkzugriff war in der
-  Entwicklungsumgebung blockiert).
-- **WEBRECHERCHE**: Balsamico-Essig, Ahornsirup, Gelierzucker, Rotwein,
-  Senfsaat gelb/braun – Werte stammen aus Verbraucher-Nährwertportalen
-  (Fddb, Yazio, Wikifit u. ä.), **nicht amtlich**, teils widersprüchlich
-  zwischen den Quellen. Vor jeder echten Deklaration ersetzen.
-- **UNBEKANNT** (Speck, Pektin): bewusst ohne Werte angelegt, weil die
-  gefundenen Angaben zu stark streuten bzw. keine Recherche stattfand. Die App
-  markiert solche Rohstoffe automatisch als unvollständig statt einen falschen
-  Wert vorzutäuschen.
+- **USDA**: für Rohgemüse (Gurke, Paprika, Chili, Zwiebel) und Sonnenblumenöl
+  – laut Websuche über USDA FoodData Central, aber nicht direkt an der
+  Primärquelle fdc.nal.usda.gov gegengeprüft (Netzwerkzugriff auf
+  dl.google.com/USDA war in der Entwicklungsumgebung blockiert). Einzelne
+  Felder (z. B. Salz bei Paprika/Chili) waren in den Suchtreffern nicht
+  enthalten und wurden bewusst NULL belassen statt geraten.
+- **WEBRECHERCHE**: Balsamico-Essig, Ahornsirup, Gelierzucker 2:1/3:1,
+  Rotwein, Senfsaat gelb/braun, Pektin, Speck – Werte stammen aus
+  Verbraucher-Nährwertportalen (Fddb, Yazio, Wikifit u. ä.), **nicht
+  amtlich**. Bei Speck wichen drei unabhängige Treffer für geräucherten
+  Bauchspeck um bis zu ±25 kcal/100g voneinander ab – hier wurde bewusst ein
+  gekennzeichneter **Mittelwert** eingetragen (kein Einzelwert als Wahrheit
+  ausgegeben), siehe `quelleHinweis` im Code. Vor jeder echten Deklaration
+  durch Herstelleretikett ersetzen.
 
 **Empfehlung für den produktiven Einsatz:** Rohstoffe schrittweise durch
 Herstelleretiketten der tatsächlich eingekauften Handelsware ersetzen (am
@@ -60,8 +62,12 @@ verifizieren, bevor sie für eine echte Kennzeichnung verwendet werden.
 ## Architektur
 
 - Kotlin, Jetpack Compose, Room (lokale SQLite-DB, offline-first)
-- `data/`: Room-Entitäten (`Rohstoff`, `Rezeptur`, `RezepturZutat`), DAOs,
-  `AppDatabase` (Seeding beim ersten Start), `SeedData`
+- `data/`: Room-Entitäten (`Rohstoff` mit eindeutigem Index auf `name`,
+  `Rezeptur`, `RezepturZutat`), DAOs, `AppDatabase` (Migration 1→2), `SeedData`
+  – die Standard-Rohstoffe werden bei **jedem** App-Start per
+  `OnConflictStrategy.IGNORE` nachgeglichen: neue `SeedData`-Einträge aus
+  einem Update erscheinen automatisch, bereits vorhandene oder von dir selbst
+  korrigierte Rohstoffe (gleicher Name) werden dabei nicht überschrieben.
 - `domain/`: `NaehrwertBerechnung` (Aggregationslogik), `NaehrwertErgebnis`,
   `NaehrwertDeklarationFormatter` (Textausgabe in Anhang-XV-Reihenfolge)
 - `ui/`: `NaehrwertViewModel`, drei Compose-Screens (Zutaten-Eingabe,
@@ -83,14 +89,17 @@ Android Studio öffnen, Gradle-Sync abwarten, dann
 `Build → Build Bundle(s)/APK(s) → Build APK(s)`. Die APK landet in
 `app/build/outputs/apk/debug/app-debug.apk`.
 
-## Bekannte Einschränkung dieser Erstanlage
+## Build-Status
 
-Die Entwicklungsumgebung, in der dieses Grundgerüst erstellt wurde, hatte
-**keinen Netzwerkzugriff auf dl.google.com/Google-Maven-Repository** und kein
-installiertes Android SDK. Der Gradle-Wrapper (`gradlew`, Version 8.7) wurde
-lokal erzeugt und funktioniert, aber **ein echter Build (`./gradlew
-assembleDebug`) und die Unit-Tests unter `app/src/test` wurden in dieser
-Sitzung nicht ausgeführt** – der Code wurde sorgfältig, aber ohne
-Compiler-Verifikation geschrieben. Bitte beim ersten Öffnen in Android Studio
-(Gradle-Sync mit normalem Internetzugang) auf Fehler prüfen, insbesondere bei
-den Compose-Import-Pfaden und der KSP/Room-Codegenerierung.
+Seit dem GitHub-Actions-Workflow (`.github/workflows/android-build.yml`) ist
+der Build compiler-verifiziert (nicht nur in Android Studio – die
+Entwicklungsumgebung dieser Sitzung selbst hat keinen Netzwerkzugriff auf das
+Google-Maven-Repository und kann nicht lokal bauen/testen). Aktueller Stand:
+grün, siehe jeweils neuester Lauf unter GitHub → Actions.
+
+## Datenbank-Update (Schema-Version 2)
+
+Ab Schema-Version 2 hat `Rohstoff.name` einen eindeutigen Index; die
+Migration 1→2 legt ihn per SQL an. Wer die App vor diesem Update bereits
+installiert hatte: beim nächsten Start wird automatisch migriert, bestehende
+Rohstoffe/Rezepturen bleiben erhalten.

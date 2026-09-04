@@ -5,13 +5,18 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_rohstoffe_name ON rohstoffe(name)")
+    }
+}
 
 @Database(
     entities = [Rohstoff::class, Rezeptur::class, RezepturZutat::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -24,25 +29,13 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var instance: AppDatabase? = null
 
-        fun get(context: Context, scope: CoroutineScope = CoroutineScope(Dispatchers.IO)): AppDatabase =
+        fun get(context: Context): AppDatabase =
             instance ?: synchronized(this) {
-                instance ?: run {
-                    lateinit var built: AppDatabase
-                    built = Room.databaseBuilder(
-                        context.applicationContext,
-                        AppDatabase::class.java,
-                        "naehrwertrechner.db"
-                    ).addCallback(object : RoomDatabase.Callback() {
-                        override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            scope.launch {
-                                built.rohstoffDao().einfuegenAlle(SeedData.initialeRohstoffe())
-                            }
-                        }
-                    }).build()
-                    instance = built
-                    built
-                }
+                instance ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "naehrwertrechner.db"
+                ).addMigrations(MIGRATION_1_2).build().also { instance = it }
             }
     }
 }

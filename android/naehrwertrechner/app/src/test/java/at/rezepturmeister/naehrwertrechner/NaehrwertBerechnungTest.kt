@@ -2,6 +2,7 @@ package at.rezepturmeister.naehrwertrechner
 
 import at.rezepturmeister.naehrwertrechner.data.NaehrwertQuelle
 import at.rezepturmeister.naehrwertrechner.data.Rohstoff
+import at.rezepturmeister.naehrwertrechner.data.SeedData
 import at.rezepturmeister.naehrwertrechner.domain.NaehrwertBerechnung
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -43,5 +44,16 @@ class NaehrwertBerechnungTest {
         )
         assertFalse(ergebnis.istVollstaendig)
         assertEquals(listOf("Unbekannt"), ergebnis.fehlendeDaten)
+    }
+
+    @Test
+    fun `SeedData enthaelt keine doppelten Rohstoffnamen`() {
+        val namen = SeedData.initialeRohstoffe().map { it.name }
+        assertEquals(
+            "Rohstoff.name hat einen eindeutigen DB-Index – doppelte Namen in SeedData " +
+                "würden beim Einfügen fehlschlagen bzw. stillschweigend ignoriert werden.",
+            namen.distinct().size,
+            namen.size
+        )
     }
 }

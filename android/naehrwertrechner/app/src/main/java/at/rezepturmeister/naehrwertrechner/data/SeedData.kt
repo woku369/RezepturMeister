@@ -12,8 +12,9 @@ package at.rezepturmeister.naehrwertrechner.data
  * vor der ersten realen Deklaration gezielt nachgeprüft/ersetzt werden kann
  * (siehe Art. 31 LMIV: Berechnung nur auf Basis bekannter/anerkannter Daten).
  *
- * Fehlt ein Wert komplett (z. B. Speck, Pektin), wurde bewusst NULL belassen,
- * statt einen unsicheren Wert zu erfinden – das macht die App-eigene
+ * Fehlt ein einzelnes Feld (z. B. Salz bei Paprika/Chili, gesättigte
+ * Fettsäuren bei Speck), wurde es bewusst NULL belassen, statt einen
+ * unsicheren Wert zu erfinden – das macht die App-eigene
  * Vollständigkeitsprüfung (`Rohstoff.istVollstaendig()`) direkt sichtbar.
  */
 object SeedData {
@@ -93,28 +94,45 @@ object SeedData {
         Rohstoff(
             name = "Paprika, rot, roh", kategorie = "Gemüse",
             energieKj = 109.0, energieKcal = 26.0, fett = 0.3, kohlenhydrate = 6.0, eiweiss = 1.0,
-            quelle = NaehrwertQuelle.USDA, quelleHinweis = QUELLE_USDA_HINWEIS
+            quelle = NaehrwertQuelle.USDA,
+            quelleHinweis = "$QUELLE_USDA_HINWEIS Erneut recherchiert September 2026: Energie/Fett/" +
+                "Kohlenhydrate/Eiweiß bestätigt, Zucker/Ballaststoffe/Salz weiterhin nicht in " +
+                "verlässlicher Form gefunden – bewusst NULL belassen."
         ),
         Rohstoff(
             name = "Chili/Peperoni, rot, roh", kategorie = "Gemüse",
             energieKj = 166.0, energieKcal = 40.0, fett = 0.4, kohlenhydrate = 8.8, zucker = 5.3,
             ballaststoffe = 1.5, eiweiss = 1.9,
-            quelle = NaehrwertQuelle.USDA, quelleHinweis = QUELLE_USDA_HINWEIS
+            quelle = NaehrwertQuelle.USDA,
+            quelleHinweis = "$QUELLE_USDA_HINWEIS Erneut recherchiert September 2026 (USDA FDC 170106) " +
+                "– Energie/Fett/Kohlenhydrate/Ballaststoffe/Eiweiß bestätigt. Salzgehalt (Natrium) " +
+                "war in den Suchtreffern nicht enthalten, bewusst NULL belassen statt zu schätzen."
         ),
         Rohstoff(
             name = "Zwiebel, roh", kategorie = "Gemüse",
-            energieKj = 167.0, energieKcal = 40.0, fett = 0.1, kohlenhydrate = 9.3, ballaststoffe = 1.7,
-            eiweiss = 1.1,
-            quelle = NaehrwertQuelle.USDA, quelleHinweis = QUELLE_USDA_HINWEIS
+            energieKj = 167.0, energieKcal = 40.0, fett = 0.1, kohlenhydrate = 9.3, zucker = 4.2,
+            ballaststoffe = 1.7, eiweiss = 1.1,
+            quelle = NaehrwertQuelle.USDA,
+            quelleHinweis = "$QUELLE_USDA_HINWEIS Zuckerwert (4,2 g) September 2026 ergänzt " +
+                "(vorherige Recherche hatte hier fälschlich Ballaststoffe statt Zucker geliefert)."
         ),
 
         // ---- Weitere Zutaten der zweiten Produktgruppe ----
         Rohstoff(
             name = "Speck (Bauchspeck, geräuchert)", kategorie = "Fleischprodukt",
-            quelle = NaehrwertQuelle.UNBEKANNT,
-            quelleHinweis = "TODO: keine belastbaren Werte hinterlegt. Websuche lieferte stark " +
-                "widersprüchliche Angaben (320–372 kcal/100g je nach Zuschnitt/Marke) – bewusst nicht " +
-                "übernommen. Bitte Herstelleretikett der tatsächlich verwendeten Speckware eintragen."
+            energieKj = 1590.0, energieKcal = 380.0, fett = 33.3, kohlenhydrate = 0.0,
+            eiweiss = 16.7, salz = 2.5,
+            quelle = NaehrwertQuelle.WEBRECHERCHE,
+            quelleHinweis = "Mittelwert aus 3 unabhängigen, sich überschneidenden Websuche-Treffern " +
+                "September 2026 für geräucherten Bauchspeck (372 kcal/18,0 g Eiweiß/33,3 g Fett; " +
+                "320 kcal/16,0 g Eiweiß/28,9 g Fett; 405 kcal/16,1 g Eiweiß/37,8 g Fett/2,5 g Salz) – " +
+                "keine amtliche Quelle, Streuung ±25 kcal. Ein separater Treffer für ROHEN, ungeräucherten " +
+                "Bauchspeck (796 kcal, 88,7 g Fett, nur 2,9 g Eiweiß – praktisch reines Fettgewebe) wurde " +
+                "bewusst NICHT verwendet, da für Gemüsezubereitungen typischerweise der geräucherte, " +
+                "durchwachsene Speck mit Fleischanteil eingesetzt wird. Vor produktiver Nutzung durch das " +
+                "Etikett der tatsächlich eingekauften Speckware ersetzen – Salzgehalt schwankt stark je " +
+                "Pökelverfahren. Gesättigte Fettsäuren in keiner der Quellen ausgewiesen, daher NULL " +
+                "belassen (Rohstoff bleibt bis zur Etikettdaten-Übernahme als unvollständig markiert)."
         ),
         Rohstoff(
             name = "Ahornsirup", kategorie = "Süßungsmittel",
@@ -133,10 +151,26 @@ object SeedData {
                 "Mischungsverhältnis (z. B. 2:1) oder Hersteller abweichende Werte, Etikett prüfen."
         ),
         Rohstoff(
+            name = "Gelierzucker 2:1", kategorie = "Süßungsmittel",
+            energieKj = 1658.0, energieKcal = 396.0, fett = 0.0, kohlenhydrate = 98.5, zucker = 98.0,
+            eiweiss = 0.0, salz = 0.0,
+            quelle = NaehrwertQuelle.WEBRECHERCHE,
+            quelleHinweis = "$QUELLE_WEB_HINWEIS Werte für Aldi-Markenprodukt; andere Marken (Dr. " +
+                "Oetker u. a.) lagen zwischen 391–401 kcal bzw. 95,5–98,5 g Kohlenhydrate/100 g – " +
+                "Streuung gering, aber vor Verwendung Etikett des konkreten Produkts prüfen."
+        ),
+        Rohstoff(
             name = "Pektin (Apfel-/Citruspektin, Pulver)", kategorie = "Geliermittel",
-            quelle = NaehrwertQuelle.UNBEKANNT,
-            quelleHinweis = "TODO: keine Websuche für dieses Produkt durchgeführt. Bitte " +
-                "Herstellerdatenblatt einpflegen (Reinheitsgrad je Produkt unterschiedlich)."
+            energieKj = 820.0, energieKcal = 196.0, fett = 1.0, kohlenhydrate = 44.5, zucker = 0.0,
+            ballaststoffe = 36.5, eiweiss = 2.3,
+            quelle = NaehrwertQuelle.WEBRECHERCHE,
+            quelleHinweis = "Websuche September 2026, Einzelquelle (Fddb, Handelsprodukt " +
+                "\"Apfelpektin Flocken\", kein Reinstoff-Pektin). Reines Pektinpulver ist praktisch " +
+                "100 % lösliche Ballaststoffe – Handelsprodukte werden aber häufig mit Traubenzucker " +
+                "gestreckt, um die Gelierkraft zu standardisieren, daher der Kohlenhydratanteil. " +
+                "Salz nicht ausgewiesen (0 angenommen ist hier NICHT belegt, daher NULL belassen). " +
+                "Für das konkret verwendete Produkt unbedingt Herstellerdatenblatt heranziehen, da " +
+                "der Streckungsgrad je Hersteller stark variiert."
         ),
         Rohstoff(
             name = "Rotwein, trocken", kategorie = "Sonstige Zutat",
@@ -148,6 +182,18 @@ object SeedData {
                 "Restzuckergehalt/Alkoholgehalt (Quellen nannten 0,8–2,6 g Kohlenhydrate/100 ml) – " +
                 "für die konkret verwendete Weinmarke Herstellerangabe verwenden. Energiewert enthält " +
                 "bereits den Alkoholanteil; alkoholGehaltVol dient nur der Kennzeichnung."
+        ),
+
+        // ---- Fett/Öl ----
+        Rohstoff(
+            name = "Sonnenblumenöl", kategorie = "Fett/Öl",
+            energieKj = 3700.0, energieKcal = 884.0, fett = 100.0, gesaettigteFettsaeuren = 10.3,
+            kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
+            quelle = NaehrwertQuelle.USDA,
+            quelleHinweis = "$QUELLE_USDA_HINWEIS Reines Pflanzenöl – Fettwert (100 g/100 g) " +
+                "definitorisch, gesättigte Fettsäuren laut USDA-Referenz für linolsäurereiches " +
+                "Sonnenblumenöl (\"linoleic\"); High-Oleic-Sonnenblumenöl hat einen anderen Anteil " +
+                "gesättigter/einfach ungesättigter Fettsäuren – bei Verwendung Etikett prüfen."
         ),
 
         // ---- Senf ----

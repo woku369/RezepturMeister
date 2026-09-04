@@ -1,6 +1,7 @@
 package at.rezepturmeister.naehrwertrechner.data
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
@@ -10,8 +11,14 @@ import androidx.room.PrimaryKey
  *
  * Alle Nährwertfelder sind nullable: fehlende Werte werden bei der Berechnung
  * als "fehlende Daten" ausgewiesen statt stillschweigend als 0 gerechnet zu werden.
+ *
+ * Eindeutiger Index auf `name`: dadurch kann die Start-Rohstoffliste (SeedData)
+ * bei jedem App-Start gefahrlos erneut eingefügt werden (OnConflictStrategy.IGNORE
+ * überspringt bereits vorhandene Namen) – neue Einträge aus einem App-Update
+ * erscheinen so automatisch, ohne von dir bereits eingetragene/korrigierte
+ * Rohstoffe zu überschreiben.
  */
-@Entity(tableName = "rohstoffe")
+@Entity(tableName = "rohstoffe", indices = [Index(value = ["name"], unique = true)])
 data class Rohstoff(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
