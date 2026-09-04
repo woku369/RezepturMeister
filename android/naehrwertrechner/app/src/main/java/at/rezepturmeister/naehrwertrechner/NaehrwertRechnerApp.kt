@@ -12,12 +12,12 @@ class NaehrwertRechnerApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // Ergänzt bei jedem Start fehlende Standard-Rohstoffe (z. B. nach einem
-        // App-Update mit neuen SeedData-Einträgen). Der eindeutige Index auf
-        // Rohstoff.name sorgt dafür, dass bereits vorhandene oder vom Nutzer
-        // selbst korrigierte Einträge dabei NICHT überschrieben werden.
+        // Gleicht bei jedem Start die Standard-Rohstoffe mit SeedData ab: neue Einträge
+        // werden ergänzt, bereits vorhandene auf den aktuellen Stand aktualisiert (z. B.
+        // wenn eine Nährwertangabe im Nachhinein korrigiert wurde). Siehe Kommentar bei
+        // RohstoffDao.syncSeedDaten() zur aktuell fehlenden Nutzer-Bearbeiten-Ansicht.
         CoroutineScope(Dispatchers.IO).launch {
-            database.rohstoffDao().einfuegenAlle(SeedData.initialeRohstoffe())
+            database.rohstoffDao().syncSeedDaten(SeedData.initialeRohstoffe())
         }
     }
 }

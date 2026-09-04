@@ -34,22 +34,35 @@ zusammengestellt, **nicht** durch direkten Abgleich mit ÖNWT/BLS oder mit
 Herstelleretiketten der tatsächlich eingekauften Waren. Jeder Datensatz trägt
 ein Pflichtfeld `quelle` + `quelleHinweis`:
 
-- **BERECHNET**: rechnerisch eindeutig (Zucker, Salz, Wasser, verdünnte
-  Speiseessige aus dem Anhang-XIV-Faktor für organische Säuren).
-- **USDA**: für Rohgemüse (Gurke, Paprika, Chili, Zwiebel) und Sonnenblumenöl
-  – laut Websuche über USDA FoodData Central, aber nicht direkt an der
-  Primärquelle fdc.nal.usda.gov gegengeprüft (Netzwerkzugriff auf
-  dl.google.com/USDA war in der Entwicklungsumgebung blockiert). Einzelne
-  Felder (z. B. Salz bei Paprika/Chili) waren in den Suchtreffern nicht
-  enthalten und wurden bewusst NULL belassen statt geraten.
-- **WEBRECHERCHE**: Balsamico-Essig, Ahornsirup, Gelierzucker 2:1/3:1,
-  Rotwein, Senfsaat gelb/braun, Pektin, Speck – Werte stammen aus
-  Verbraucher-Nährwertportalen (Fddb, Yazio, Wikifit u. ä.), **nicht
-  amtlich**. Bei Speck wichen drei unabhängige Treffer für geräucherten
-  Bauchspeck um bis zu ±25 kcal/100g voneinander ab – hier wurde bewusst ein
-  gekennzeichneter **Mittelwert** eingetragen (kein Einzelwert als Wahrheit
-  ausgegeben), siehe `quelleHinweis` im Code. Vor jeder echten Deklaration
-  durch Herstelleretikett ersetzen.
+- **BERECHNET**: rechnerisch/definitorisch eindeutig – Zucker, Salz, Wasser,
+  verdünnte Speiseessige aus dem Anhang-XIV-Faktor für organische Säuren
+  (13 kJ/g), reines Pektin (E440) als ~100 % löslicher Ballaststoff über den
+  Anhang-XIV-Ballaststofffaktor (8 kJ/g) statt einer mit Traubenzucker
+  gestreckten Handelsware. "JK"-Kräutermischung (Rezeptur "Datteltomaten
+  geschmort") auf Nutzerwunsch bewusst auf 0 gesetzt, da laut Nutzer eine
+  Mischung getrockneter mediterraner Kräuter ohne verfügbare Herstellerdaten
+  und mit geringem Mengenanteil (~1,3 %) – das ist eine bewusste
+  Vereinfachung, KEIN tatsächlicher Nährwert von Null.
+- **USDA**: für Rohgemüse (Gurke, Paprika, Chili, Zwiebel, Tomate) und
+  Sonnenblumen-/Olivenöl – laut Websuche über USDA FoodData Central, aber
+  nicht direkt an der Primärquelle fdc.nal.usda.gov gegengeprüft
+  (Netzwerkzugriff auf dl.google.com/USDA war in der Entwicklungsumgebung
+  blockiert). Einzelne Felder (z. B. Salz bei Paprika/Chili) waren in den
+  Suchtreffern nicht enthalten und wurden bewusst NULL belassen statt geraten.
+- **HERSTELLERETIKETT**: Ahornsirup – auf das konkret verwendete Produkt
+  (Spar Natur*pur Bio-Ahornsirup) umgestellt; Wert stammt aus mehreren
+  übereinstimmenden Verbraucherportalen, nicht direkt von spar.at geprüft.
+- **WEBRECHERCHE**: Balsamico-Essig, Gelierzucker 2:1/3:1, Rotwein, Senfsaat
+  gelb/braun, Speck (roh und ausgelassen), Rosmarin/Thymian/Zimt/Kreuzkümmel/
+  Schwarzkümmel – Werte stammen aus Verbraucher-Nährwertportalen (Fddb,
+  Yazio, Wikifit u. ä.), **nicht amtlich**. Bei Speck wichen mehrere
+  unabhängige Treffer um bis zu ±25 kcal/100g voneinander ab – hier wurde
+  bewusst ein gekennzeichneter **Mittelwert** eingetragen (kein Einzelwert
+  als Wahrheit ausgegeben), siehe `quelleHinweis` im Code. Für einen
+  generischen Pauschalwert "getrocknete Gewürze" gilt: bewusst NICHT
+  angelegt, da die Streuung zwischen den einzelnen Gewürzen zu groß für einen
+  seriösen Durchschnitt ist (Fett z. B. 1,2–22,3 g/100 g). Vor jeder echten
+  Deklaration durch Herstelleretikett ersetzen.
 
 **Empfehlung für den produktiven Einsatz:** Rohstoffe schrittweise durch
 Herstelleretiketten der tatsächlich eingekauften Handelsware ersetzen (am
@@ -64,10 +77,15 @@ verifizieren, bevor sie für eine echte Kennzeichnung verwendet werden.
 - Kotlin, Jetpack Compose, Room (lokale SQLite-DB, offline-first)
 - `data/`: Room-Entitäten (`Rohstoff` mit eindeutigem Index auf `name`,
   `Rezeptur`, `RezepturZutat`), DAOs, `AppDatabase` (Migration 1→2), `SeedData`
-  – die Standard-Rohstoffe werden bei **jedem** App-Start per
-  `OnConflictStrategy.IGNORE` nachgeglichen: neue `SeedData`-Einträge aus
-  einem Update erscheinen automatisch, bereits vorhandene oder von dir selbst
-  korrigierte Rohstoffe (gleicher Name) werden dabei nicht überschrieben.
+  – `RohstoffDao.syncSeedDaten()` gleicht bei **jedem** App-Start die
+  Standard-Rohstoffe mit `SeedData` ab: neue Namen werden ergänzt, bereits
+  vorhandene Namen auf den aktuellen `SeedData`-Stand aktualisiert (Id bleibt
+  erhalten, bestehende Rezeptur-Verknüpfungen bleiben also gültig). Das ist
+  bewusst so gewählt, weil es aktuell **keine Bearbeiten-Ansicht** für
+  Rohstoffe gibt – `SeedData` gilt also als alleinige Wahrheit. Sobald eine
+  manuelle Bearbeitung eingeführt wird, muss diese Synchronisation angepasst
+  werden (z. B. Flag `vomNutzerBearbeitet`), damit sie keine Nutzerkorrekturen
+  mehr überschreibt – siehe Kommentar in `RohstoffDao.kt`.
 - `domain/`: `NaehrwertBerechnung` (Aggregationslogik), `NaehrwertErgebnis`,
   `NaehrwertDeklarationFormatter` (Textausgabe in Anhang-XV-Reihenfolge)
 - `ui/`: `NaehrwertViewModel`, drei Compose-Screens (Zutaten-Eingabe,

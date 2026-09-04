@@ -9,25 +9,48 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface RohstoffDao {
+abstract class RohstoffDao {
     @Query("SELECT * FROM rohstoffe ORDER BY name")
-    fun alle(): Flow<List<Rohstoff>>
+    abstract fun alle(): Flow<List<Rohstoff>>
 
     @Query("SELECT * FROM rohstoffe WHERE id = :id")
-    suspend fun byId(id: Long): Rohstoff?
+    abstract suspend fun byId(id: Long): Rohstoff?
+
+    @Query("SELECT id FROM rohstoffe WHERE name = :name LIMIT 1")
+    abstract suspend fun findeIdNachName(name: String): Long?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun einfuegen(rohstoff: Rohstoff): Long
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun einfuegenAlle(rohstoffe: List<Rohstoff>)
+    abstract suspend fun einfuegen(rohstoff: Rohstoff): Long
 
     @Update
-    suspend fun aktualisieren(rohstoff: Rohstoff)
+    abstract suspend fun aktualisieren(rohstoff: Rohstoff)
 
     @Delete
-    suspend fun loeschen(rohstoff: Rohstoff)
+    abstract suspend fun loeschen(rohstoff: Rohstoff)
 
     @Query("SELECT COUNT(*) FROM rohstoffe")
-    suspend fun anzahl(): Int
+    abstract suspend fun anzahl(): Int
+
+    /**
+     * Gleicht die App-eigene Start-Rohstoffliste (SeedData) mit der lokalen DB ab:
+     * Ein Rohstoff mit bereits vorhandenem Namen wird auf den aktuellen SeedData-Stand
+     * aktualisiert (Id bleibt erhalten, damit bestehende RezepturZutat-Verknüpfungen
+     * gültig bleiben), ein neuer Name wird eingefügt.
+     *
+     * WICHTIG: Es gibt aktuell keine Bearbeiten-Ansicht für Rohstoffe in der App –
+     * SeedData gilt daher als "Wahrheit" und wird bei jedem Start vollständig
+     * durchgesetzt. Sobald eine manuelle Bearbeitung von Rohstoffen eingeführt wird,
+     * MUSS diese Funktion angepasst werden (z. B. per Flag "vomNutzerBearbeitet"),
+     * damit sie vom Nutzer korrigierte Werte nicht bei jedem Start wieder überschreibt.
+     */
+    suspend fun syncSeedDaten(seedListe: List<Rohstoff>) {
+        seedListe.forEach { rohstoff ->
+            val vorhandeneId = findeIdNachName(rohstoff.name)
+            if (vorhandeneId != null) {
+                aktualisieren(rohstoff.copy(id = vorhandeneId))
+            } else {
+                einfuegen(rohstoff)
+            }
+        }
+    }
 }

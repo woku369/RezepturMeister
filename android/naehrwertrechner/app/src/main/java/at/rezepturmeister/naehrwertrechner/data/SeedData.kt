@@ -142,16 +142,10 @@ object SeedData {
                 "sortenspezifischen Werte gefunden wurden. Fett und Salz nicht in den Suchtreffern " +
                 "enthalten, bewusst NULL belassen."
         ),
-        Rohstoff(
-            name = "Rauchsalz", kategorie = "Grundstoff",
-            energieKj = 0.0, energieKcal = 0.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
-            kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 100.0,
-            quelle = NaehrwertQuelle.BERECHNET,
-            quelleHinweis = "Chemisch NaCl mit Raucharoma (durch Räuchern oder Zusatz von " +
-                "Raucharoma) – der Rauchanteil ist mengenmäßig vernachlässigbar, Nährwert daher wie " +
-                "reines Speisesalz angesetzt. Keine gesonderte Websuche durchgeführt, da keine " +
-                "andere Zusammensetzung zu erwarten ist."
-        ),
+        // Hinweis "Rauchsalz": bewusst KEIN eigener Rohstoff (Absprache September 2026) –
+        // Rezepturen, die Rauchsalz verwenden, werden mit "Salz (Speisesalz, NaCl)"
+        // gerechnet. Nährwertlich ohnehin identisch (NaCl + geschmacklich vernachlässigbares
+        // Raucharoma), das vereinfacht die Rohstoffliste.
 
         // ---- Kräuter/Gewürze ----
         Rohstoff(
@@ -184,15 +178,34 @@ object SeedData {
                 "wahrscheinlich fehlerhafte Zahl zu verwenden."
         ),
         Rohstoff(
+            name = "Schwarzkümmel, gemahlen", kategorie = "Gewürz/Kräuter",
+            energieKj = 1443.0, energieKcal = 345.0, fett = 15.0, gesaettigteFettsaeuren = 0.5,
+            kohlenhydrate = 52.0, eiweiss = 16.0,
+            quelle = NaehrwertQuelle.WEBRECHERCHE,
+            quelleHinweis = "Websuche September 2026 (Wikifit u. a., nicht amtlich) – Zucker, " +
+                "Ballaststoffe und Salz nicht ausgewiesen, daher NULL belassen. Auf Anfrage ergänzt " +
+                "(kein Kreuzverweis mit Kreuzkümmel/Cuminum cyminum – Schwarzkümmel ist botanisch " +
+                "Nigella sativa, ein anderes Gewürz)."
+        ),
+        // Kein pauschaler Sammelwert "getrocknete Gewürze" angelegt: die Streuung zwischen den
+        // oben recherchierten Einzelgewürzen ist zu groß (Fett z. B. 1,2–22,3 g/100 g), ein
+        // Durchschnitt wäre keine seriöse Nährwertangabe. Für neue, noch unrecherchierte Gewürze
+        // in kleiner Menge (wenige Gramm) gilt daher: einzeln recherchieren, oder wenn nichts
+        // Verlässliches auffindbar ist, den Beitrag zur Berechnung vernachlässigen (Menge meist
+        // < 1 % des Ansatzes) statt zu schätzen.
+        Rohstoff(
             name = "Italienische Kräutermischung, getrocknet (Markenprodukt \"JK\")",
             kategorie = "Gewürz/Kräuter",
-            quelle = NaehrwertQuelle.UNBEKANNT,
-            quelleHinweis = "TODO: zwei Websuche-Treffer widersprachen sich stark (1255 kJ/299 kcal/" +
-                "7,0 g Fett vs. 219 kJ/52 kcal/7,4 g Kohlenhydrate/0,4 g Fett – vermutlich unterschiedliche " +
-                "Produkttypen, z. B. Trockenmischung vs. Öl-Kräuterpaste) und wurden daher bewusst NICHT " +
-                "übernommen. Menge in der Rezeptur \"Datteltomaten geschmort\" ist mit ca. 1,3 % des " +
-                "Ansatzes gering, aber ohne verlässlichen Wert bleibt die Deklaration unvollständig – " +
-                "Herstellerdatenblatt des konkret verwendeten Produkts \"JK\" erforderlich."
+            energieKj = 0.0, energieKcal = 0.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
+            kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
+            quelle = NaehrwertQuelle.BERECHNET,
+            quelleHinweis = "Laut Nutzer (September 2026): Mischung aus getrockneten mediterranen " +
+                "Kräutern, keine Herstellerdaten bekannt. Zwei zuvor gefundene Websuche-Treffer " +
+                "widersprachen sich zudem stark (vermutlich unterschiedliche Produkttypen). Da die " +
+                "Menge in der Rezeptur \"Datteltomaten geschmort\" mit ca. 1,3 % des Ansatzes gering " +
+                "ist, wird der Nährwertbeitrag auf Wunsch bewusst vernachlässigt (auf 0 gesetzt) " +
+                "statt geschätzt – das ist eine bewusste Vereinfachung, KEIN tatsächlicher Nährwert " +
+                "von Null. Bei größerer Einsatzmenge oder verfügbarem Herstellerdatenblatt ersetzen."
         ),
 
         // ---- Weitere Zutaten der zweiten Produktgruppe ----
@@ -226,11 +239,15 @@ object SeedData {
         ),
         Rohstoff(
             name = "Ahornsirup", kategorie = "Süßungsmittel",
-            energieKj = 1088.0, energieKcal = 260.0, fett = 0.06, kohlenhydrate = 67.0, zucker = 60.0,
-            eiweiss = 0.04,
-            quelle = NaehrwertQuelle.WEBRECHERCHE,
-            quelleHinweis = "$QUELLE_WEB_HINWEIS Andere Quellen nennen bis zu 333 kcal/100g " +
-                "(Reinheitsgrad/Wassergehalt variiert) – Etikett der verwendeten Marke prüfen."
+            energieKj = 1491.0, energieKcal = 356.0, fett = 0.0, kohlenhydrate = 89.0, zucker = 89.0,
+            eiweiss = 0.0,
+            quelle = NaehrwertQuelle.HERSTELLERETIKETT,
+            quelleHinweis = "Auf Wunsch September 2026 auf das konkret verwendete Produkt " +
+                "(Spar Natur*pur Bio-Ahornsirup, 0,5 l) umgestellt. Wert stammt nicht direkt vom " +
+                "Etikett/spar.at, sondern aus mehreren unabhängigen Verbraucherportalen " +
+                "(Fddb, Wikifit, Codecheck), die übereinstimmend dieselben Zahlen für dieses Produkt " +
+                "zeigen – höhere Verlässlichkeit als eine Einzelquelle, aber noch keine " +
+                "Originaletikett-Prüfung. Ballaststoffe und Salz nicht ausgewiesen, NULL belassen."
         ),
         Rohstoff(
             name = "Gelierzucker 3:1", kategorie = "Süßungsmittel",
