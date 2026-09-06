@@ -43,20 +43,24 @@ object NaehrwertBerechnung {
 
     data class ZutatMenge(val rohstoff: Rohstoff, val mengeGramm: Double)
 
-    // Anhang XIV VO (EU) 1169/2011 Umrechnungsfaktoren
-    private const val KJ_PRO_G_FETT = 37.0
-    private const val KJ_PRO_G_KOHLENHYDRATE = 17.0
-    private const val KJ_PRO_G_EIWEISS = 17.0
-    private const val KJ_PRO_G_BALLASTSTOFFE = 8.0
-    private const val KJ_PRO_G_ALKOHOL = 29.0
-    private const val KJ_PRO_G_ORGANISCHE_SAEUREN = 13.0
+    // Anhang XIV VO (EU) 1169/2011 Umrechnungsfaktoren. Bewusst nicht privat, damit
+    // z. B. der XLSX-Export dieselben Faktoren für eine nachvollziehbare
+    // Berechnungsdarstellung verwenden kann, statt sie ein zweites Mal zu duplizieren
+    // (Duplizierung hätte in dieser Codebasis bereits einmal zu einer vergessenen
+    // Aktualisierung geführt).
+    const val KJ_PRO_G_FETT = 37.0
+    const val KJ_PRO_G_KOHLENHYDRATE = 17.0
+    const val KJ_PRO_G_EIWEISS = 17.0
+    const val KJ_PRO_G_BALLASTSTOFFE = 8.0
+    const val KJ_PRO_G_ALKOHOL = 29.0
+    const val KJ_PRO_G_ORGANISCHE_SAEUREN = 13.0
 
-    private const val KCAL_PRO_G_FETT = 9.0
-    private const val KCAL_PRO_G_KOHLENHYDRATE = 4.0
-    private const val KCAL_PRO_G_EIWEISS = 4.0
-    private const val KCAL_PRO_G_BALLASTSTOFFE = 2.0
-    private const val KCAL_PRO_G_ALKOHOL = 7.0
-    private const val KCAL_PRO_G_ORGANISCHE_SAEUREN = 3.0
+    const val KCAL_PRO_G_FETT = 9.0
+    const val KCAL_PRO_G_KOHLENHYDRATE = 4.0
+    const val KCAL_PRO_G_EIWEISS = 4.0
+    const val KCAL_PRO_G_BALLASTSTOFFE = 2.0
+    const val KCAL_PRO_G_ALKOHOL = 7.0
+    const val KCAL_PRO_G_ORGANISCHE_SAEUREN = 3.0
 
     fun berechne(zutaten: List<ZutatMenge>): NaehrwertErgebnis {
         require(zutaten.isNotEmpty()) { "Eine Rezeptur benötigt mindestens eine Zutat." }
@@ -119,6 +123,8 @@ object NaehrwertBerechnung {
             ballaststoffe = ballaststoffe,
             eiweiss = eiweiss,
             salz = salz,
+            alkohol = alkohol,
+            organischeSaeuren = organischeSaeuren,
             gesamtGewichtGramm = gesamtGewicht,
             zutatenliste = zutatenliste,
             fehlendeDaten = fehlendeDaten

@@ -118,12 +118,17 @@ verifizieren, bevor sie für eine echte Kennzeichnung verwendet werden.
 - `ui/`: `NaehrwertViewModel`, drei Compose-Screens (Zutaten-Eingabe,
   Rohstoffliste, Ergebnis)
 - `export/`: `XlsxExporter` – Button "Als Excel (.xlsx) exportieren" im
-  Ergebnis-Screen erzeugt eine Arbeitsmappe (Blatt 1: Nährwertdeklaration in
-  Anhang-XV-Reihenfolge, Blatt 2: Zutatenliste) und öffnet den
+  Ergebnis-Screen erzeugt eine Arbeitsmappe mit drei Blättern (1:
+  Nährwertdeklaration in Anhang-XV-Reihenfolge, 2: Berechnungsschlüssel –
+  transparente Herleitung des Brennwerts nach Anhang XIV, Faktor × Menge =
+  Beitrag je Nährstoff, Summenzeile – für eine Behördenprüfung ohne
+  Rückfrage nachvollziehbar, 3: Zutatenliste) und öffnet den
   Android-Teilen-Dialog (Mail, Drive, lokal speichern, …) über einen
   `FileProvider`. Nutzt die schlanke Bibliothek FastExcel statt Apache POI
   (POI ist auf Android für diesen einfachen Schreibfall unnötig schwer und
-  hat bekannte Kompatibilitätsprobleme).
+  hat bekannte Kompatibilitätsprobleme). Die Anhang-XIV-Faktoren sind als
+  öffentliche Konstanten in `NaehrwertBerechnung` definiert und werden von
+  hier nur referenziert, nicht dupliziert.
 
 ## APK bauen
 

@@ -12,6 +12,16 @@ data class NaehrwertErgebnis(
     val eiweiss: Double,
     val salz: Double,
 
+    /**
+     * Alkohol und organische Säuren (g pro 100 g) – keine eigenen Pflichtangaben der
+     * Nährwertdeklaration (Anhang XV), aber Eingangsgrößen der Energieformel
+     * (Anhang XIV). Werden hier für die nachvollziehbare Berechnungsdarstellung
+     * (z. B. Excel-Export für Behörden) mitgeführt statt nur intern in
+     * NaehrwertBerechnung zu verschwinden.
+     */
+    val alkohol: Double,
+    val organischeSaeuren: Double,
+
     val gesamtGewichtGramm: Double,
 
     /** Zutatenliste absteigend nach Gewicht – Reihenfolge für die Zutatenkennzeichnung (Art. 18 LMIV). */
