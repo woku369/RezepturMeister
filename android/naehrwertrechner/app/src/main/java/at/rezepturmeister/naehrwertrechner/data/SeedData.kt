@@ -118,11 +118,12 @@ object SeedData {
         Rohstoff(
             name = "Chili/Peperoni, rot, roh", kategorie = "Gemüse",
             energieKj = 166.0, energieKcal = 40.0, fett = 0.4, kohlenhydrate = 8.8, zucker = 5.3,
-            ballaststoffe = 1.5, eiweiss = 1.9,
+            ballaststoffe = 1.5, eiweiss = 1.9, salz = 0.0,
             quelle = NaehrwertQuelle.USDA,
             quelleHinweis = "$QUELLE_USDA_HINWEIS Erneut recherchiert September 2026 (USDA FDC 170106) " +
                 "– Energie/Fett/Kohlenhydrate/Ballaststoffe/Eiweiß bestätigt. Salzgehalt (Natrium) " +
-                "war in den Suchtreffern nicht enthalten, bewusst NULL belassen statt zu schätzen."
+                "war in den Suchtreffern nicht enthalten; auf Nutzerwunsch als vernachlässigbar auf " +
+                "0 gesetzt statt weiter offen zu lassen."
         ),
         Rohstoff(
             name = "Zwiebel, roh", kategorie = "Gemüse",
