@@ -90,6 +90,13 @@ dependencies {
     // Android bekannte Kompatibilitätsprobleme). Nur Schreibzugriff nötig.
     implementation("org.dhatim:fastexcel:0.18.0")
 
+    // On-device Texterkennung für "Foto vom Zutatenetikett" (Rohstoff-Editor).
+    // Läuft komplett lokal auf dem Gerät, kein Upload/keine Internetverbindung zur
+    // Laufzeit nötig. Nur lateinische Schrift, reicht für deutschsprachige Etiketten.
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+    // Für Task<T>.await() beim Aufruf der ML-Kit-API aus einer suspend-Funktion.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

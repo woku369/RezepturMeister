@@ -103,20 +103,25 @@ verifizieren, bevor sie für eine echte Kennzeichnung verwendet werden.
 
 - Kotlin, Jetpack Compose, Room (lokale SQLite-DB, offline-first)
 - `data/`: Room-Entitäten (`Rohstoff` mit eindeutigem Index auf `name`,
-  `Rezeptur`, `RezepturZutat`), DAOs, `AppDatabase` (Migration 1→2), `SeedData`
-  – `RohstoffDao.syncSeedDaten()` gleicht bei **jedem** App-Start die
-  Standard-Rohstoffe mit `SeedData` ab: neue Namen werden ergänzt, bereits
+  `Rezeptur`, `RezepturZutat`), DAOs, `AppDatabase` (Migration 1→2→3→4),
+  `SeedData` – `RohstoffDao.syncSeedDaten()` gleicht bei **jedem** App-Start
+  die Standard-Rohstoffe mit `SeedData` ab: neue Namen werden ergänzt, bereits
   vorhandene Namen auf den aktuellen `SeedData`-Stand aktualisiert (Id bleibt
-  erhalten, bestehende Rezeptur-Verknüpfungen bleiben also gültig). Das ist
-  bewusst so gewählt, weil es aktuell **keine Bearbeiten-Ansicht** für
-  Rohstoffe gibt – `SeedData` gilt also als alleinige Wahrheit. Sobald eine
-  manuelle Bearbeitung eingeführt wird, muss diese Synchronisation angepasst
-  werden (z. B. Flag `vomNutzerBearbeitet`), damit sie keine Nutzerkorrekturen
-  mehr überschreibt – siehe Kommentar in `RohstoffDao.kt`.
+  erhalten, bestehende Rezeptur-Verknüpfungen bleiben also gültig) – **außer**
+  der Rohstoff wurde bereits über den Rohstoff-Editor bearbeitet
+  (`vomNutzerBearbeitet = true`, Schema-Version 4): dann fasst die
+  Synchronisation ihn nicht an, damit eigene Korrekturen/Ergänzungen nicht bei
+  jedem Start wieder überschrieben werden.
 - `domain/`: `NaehrwertBerechnung` (Aggregationslogik), `NaehrwertErgebnis`,
   `NaehrwertDeklarationFormatter` (Textausgabe in Anhang-XV-Reihenfolge)
-- `ui/`: `NaehrwertViewModel`, drei Compose-Screens (Zutaten-Eingabe,
-  Rohstoffliste, Ergebnis)
+- `ocr/`: `EtikettParser` (reine, Android-unabhängige Textverarbeitung – liest
+  Brennwert/Fett/Kohlenhydrate/Ballaststoffe/Eiweiß/Salz per Regex aus dem
+  OCR-Rohtext eines fotografierten Etiketts, toleriert typische OCR-Fehler wie
+  verlorene Umlaute oder Tausenderpunkte, direkt per JVM-Unit-Test geprüft) und
+  `EtikettScanner` (Android/ML-Kit-Anbindung: on-device Texterkennung, kein
+  Upload)
+- `ui/`: `NaehrwertViewModel`, vier Compose-Screens (Zutaten-Eingabe,
+  Rohstoffliste, Rohstoff-Editor, Ergebnis)
 - `export/`: `XlsxExporter` – Button "Als Excel (.xlsx) exportieren" im
   Ergebnis-Screen erzeugt eine Arbeitsmappe mit drei Blättern (1:
   Nährwertdeklaration in Anhang-XV-Reihenfolge, 2: Berechnungsschlüssel –
@@ -129,6 +134,33 @@ verifizieren, bevor sie für eine echte Kennzeichnung verwendet werden.
   hat bekannte Kompatibilitätsprobleme). Die Anhang-XIV-Faktoren sind als
   öffentliche Konstanten in `NaehrwertBerechnung` definiert und werden von
   hier nur referenziert, nicht dupliziert.
+
+## Rohstoff-Editor & Foto-Etikett-Erkennung (September 2026)
+
+Im Tab "Rohstoffe" lässt sich jetzt ein neuer Rohstoff anlegen oder ein
+bestehender bearbeiten (vorher nur eine reine Anzeigeliste, `SeedData` galt
+als alleinige Quelle). Der Editor bietet zusätzlich "Foto aufnehmen" bzw.
+"Aus Galerie wählen", um die Nährwerttabelle eines Zutatenetiketts per
+On-Device-Texterkennung (Google ML Kit, kein Upload, keine
+Internetverbindung zur Laufzeit) auszulesen.
+
+**Wichtig – das ist ein Vorschlag, keine automatische Übernahme:** Die
+erkannten Werte füllen lediglich die (weiterhin frei editierbaren) Textfelder
+vor. Erst der explizite Klick auf "Speichern" schreibt den Rohstoff in die
+Datenbank; der erkannte Rohtext wird zur Kontrolle mit angezeigt. Etiketten
+unterscheiden sich stark in Layout und Formulierung, und OCR macht
+Lesefehler (v. a. bei Kommas/Punkten und Umlauten) – jeder Wert muss vor dem
+Speichern gegen das Etikett geprüft werden. Der Parser (`EtikettParser`) ist
+bewusst als reine, Android-unabhängige Funktion gebaut und über
+`EtikettParserTest` mit realistischen (auch fehlerhaften) OCR-Beispieltexten
+abgesichert.
+
+Ein über den Editor angelegter/geänderter Rohstoff wird als
+`vomNutzerBearbeitet = true` markiert und dadurch von der
+`SeedData`-Synchronisation beim nächsten App-Start nie mehr überschrieben
+(Schema-Version 4, siehe unten) – das damit verbundene, seit Projektbeginn
+offene Problem (siehe vorheriger Absatz zu `syncSeedDaten()`) ist damit
+gelöst.
 
 ## APK bauen
 
@@ -163,9 +195,15 @@ Entwicklungsumgebung dieser Sitzung selbst hat keinen Netzwerkzugriff auf das
 Google-Maven-Repository und kann nicht lokal bauen/testen). Aktueller Stand:
 grün, siehe jeweils neuester Lauf unter GitHub → Actions.
 
-## Datenbank-Update (Schema-Version 2)
+## Datenbank-Updates (Schema-Versionen 2–4)
 
-Ab Schema-Version 2 hat `Rohstoff.name` einen eindeutigen Index; die
-Migration 1→2 legt ihn per SQL an. Wer die App vor diesem Update bereits
-installiert hatte: beim nächsten Start wird automatisch migriert, bestehende
+- **Version 2:** `Rohstoff.name` erhält einen eindeutigen Index (Migration 1→2).
+- **Version 3:** neue Spalten `alkoholGramm`/`organischeSaeuren` für die
+  Anhang-XIV-Energieformel (Migration 2→3).
+- **Version 4:** neue Spalte `vomNutzerBearbeitet` (Default `false`/0), damit
+  über den Rohstoff-Editor angelegte/geänderte Rohstoffe von der
+  `SeedData`-Synchronisation nicht mehr überschrieben werden (Migration 3→4).
+
+Wer die App vor einem dieser Updates bereits installiert hatte: Room führt
+beim nächsten Start alle nötigen Migrationen automatisch aus, bestehende
 Rohstoffe/Rezepturen bleiben erhalten.

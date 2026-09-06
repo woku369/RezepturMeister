@@ -12,11 +12,11 @@ import androidx.room.PrimaryKey
  * Alle Nährwertfelder sind nullable: fehlende Werte werden bei der Berechnung
  * als "fehlende Daten" ausgewiesen statt stillschweigend als 0 gerechnet zu werden.
  *
- * Eindeutiger Index auf `name`: dadurch kann die Start-Rohstoffliste (SeedData)
- * bei jedem App-Start gefahrlos erneut eingefügt werden (OnConflictStrategy.IGNORE
- * überspringt bereits vorhandene Namen) – neue Einträge aus einem App-Update
- * erscheinen so automatisch, ohne von dir bereits eingetragene/korrigierte
- * Rohstoffe zu überschreiben.
+ * Eindeutiger Index auf `name`: dadurch kann RohstoffDao.syncSeedDaten() beim App-Start
+ * per Name erkennen, ob ein SeedData-Eintrag bereits existiert (dann aktualisieren,
+ * id bleibt erhalten) oder neu ist (dann einfügen). Von dir über den Rohstoff-Editor
+ * angelegte/geänderte Rohstoffe (vomNutzerBearbeitet = true) werden dabei nie
+ * überschrieben.
  */
 @Entity(tableName = "rohstoffe", indices = [Index(value = ["name"], unique = true)])
 data class Rohstoff(
@@ -71,7 +71,13 @@ data class Rohstoff(
 
     val quelle: NaehrwertQuelle = NaehrwertQuelle.UNBEKANNT,
     // Freitext: z. B. "Herstelleretikett Essig Marke X, MHD 2027", Datum, Link, Charge
-    val quelleHinweis: String = ""
+    val quelleHinweis: String = "",
+
+    // true, sobald dieser Rohstoff über den Rohstoff-Editor angelegt/geändert wurde
+    // (manuell oder per Foto-Etikett-Erkennung). Schützt den Datensatz davor, beim
+    // nächsten App-Start durch RohstoffDao.syncSeedDaten() wieder mit dem SeedData-Wert
+    // überschrieben zu werden – siehe dort.
+    val vomNutzerBearbeitet: Boolean = false
 ) {
     /** Hat der Rohstoff alle Pflichtwerte für eine vollständige Deklaration? */
     fun istVollstaendig(): Boolean =

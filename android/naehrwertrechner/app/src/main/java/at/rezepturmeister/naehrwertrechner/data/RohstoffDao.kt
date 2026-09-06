@@ -16,8 +16,8 @@ abstract class RohstoffDao {
     @Query("SELECT * FROM rohstoffe WHERE id = :id")
     abstract suspend fun byId(id: Long): Rohstoff?
 
-    @Query("SELECT id FROM rohstoffe WHERE name = :name LIMIT 1")
-    abstract suspend fun findeIdNachName(name: String): Long?
+    @Query("SELECT * FROM rohstoffe WHERE name = :name LIMIT 1")
+    abstract suspend fun findeNachName(name: String): Rohstoff?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun einfuegen(rohstoff: Rohstoff): Long
@@ -37,19 +37,18 @@ abstract class RohstoffDao {
      * aktualisiert (Id bleibt erhalten, damit bestehende RezepturZutat-Verknüpfungen
      * gültig bleiben), ein neuer Name wird eingefügt.
      *
-     * WICHTIG: Es gibt aktuell keine Bearbeiten-Ansicht für Rohstoffe in der App –
-     * SeedData gilt daher als "Wahrheit" und wird bei jedem Start vollständig
-     * durchgesetzt. Sobald eine manuelle Bearbeitung von Rohstoffen eingeführt wird,
-     * MUSS diese Funktion angepasst werden (z. B. per Flag "vomNutzerBearbeitet"),
-     * damit sie vom Nutzer korrigierte Werte nicht bei jedem Start wieder überschreibt.
+     * Ausnahme: Wurde der vorhandene Datensatz bereits über den Rohstoff-Editor manuell
+     * bearbeitet (vomNutzerBearbeitet = true), wird er NICHT angetastet – sonst würde
+     * jede eigene Korrektur/Ergänzung (auch die per Foto-Etikett-Erkennung erfassten
+     * Werte) beim nächsten App-Start wieder durch den SeedData-Wert überschrieben.
      */
     suspend fun syncSeedDaten(seedListe: List<Rohstoff>) {
         seedListe.forEach { rohstoff ->
-            val vorhandeneId = findeIdNachName(rohstoff.name)
-            if (vorhandeneId != null) {
-                aktualisieren(rohstoff.copy(id = vorhandeneId))
-            } else {
-                einfuegen(rohstoff)
+            val vorhandener = findeNachName(rohstoff.name)
+            when {
+                vorhandener == null -> einfuegen(rohstoff)
+                vorhandener.vomNutzerBearbeitet -> Unit
+                else -> aktualisieren(rohstoff.copy(id = vorhandener.id))
             }
         }
     }
