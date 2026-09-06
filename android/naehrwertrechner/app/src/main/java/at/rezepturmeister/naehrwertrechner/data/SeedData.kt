@@ -61,18 +61,21 @@ object SeedData {
             name = "Speiseessig 13% Säure", kategorie = "Einlegeflüssigkeit",
             energieKj = 169.0, energieKcal = 39.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
+            organischeSaeuren = 13.0,
             quelle = NaehrwertQuelle.BERECHNET, quelleHinweis = QUELLE_BERECHNET_HINWEIS
         ),
         Rohstoff(
             name = "Speiseessig 2% Säure", kategorie = "Einlegeflüssigkeit",
             energieKj = 26.0, energieKcal = 6.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
+            organischeSaeuren = 2.0,
             quelle = NaehrwertQuelle.BERECHNET, quelleHinweis = QUELLE_BERECHNET_HINWEIS
         ),
         Rohstoff(
             name = "Essigessenz 80% Säure", kategorie = "Grundstoff",
             energieKj = 1040.0, energieKcal = 240.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
+            organischeSaeuren = 80.0,
             quelle = NaehrwertQuelle.BERECHNET, quelleHinweis = QUELLE_BERECHNET_HINWEIS
         ),
         Rohstoff(
@@ -88,6 +91,7 @@ object SeedData {
             name = "Weingeistessig 20% Säure", kategorie = "Einlegeflüssigkeit",
             energieKj = 260.0, energieKcal = 60.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
+            organischeSaeuren = 20.0,
             quelle = NaehrwertQuelle.BERECHNET, quelleHinweis = QUELLE_BERECHNET_HINWEIS
         ),
         Rohstoff(
@@ -292,19 +296,27 @@ object SeedData {
         Rohstoff(
             name = "Rotwein, trocken", kategorie = "Sonstige Zutat",
             alkoholGehaltVol = 12.0,
+            // 12 %vol × 0,789 g/ml (Ethanoldichte) ÷ ≈1,0 g/ml (angenommene Weindichte,
+            // keine eigene Messung) ≈ 9,47 g Alkohol/100 g – Berechnungsgrundlage für die
+            // Energieformel, siehe NaehrwertBerechnung.kt.
+            alkoholGramm = 9.47,
             energieKj = 356.0, energieKcal = 85.0, fett = 0.1, kohlenhydrate = 2.6, zucker = 1.5,
             eiweiss = 0.1,
             quelle = NaehrwertQuelle.WEBRECHERCHE,
             quelleHinweis = "$QUELLE_WEB_HINWEIS Rotwein-Nährwerte streuen stark nach Sorte/" +
                 "Restzuckergehalt/Alkoholgehalt (Quellen nannten 0,8–2,6 g Kohlenhydrate/100 ml) – " +
-                "für die konkret verwendete Weinmarke Herstellerangabe verwenden. Energiewert enthält " +
-                "bereits den Alkoholanteil; alkoholGehaltVol dient nur der Kennzeichnung. Laut Nutzer " +
-                "wird konkret Spar-Rotwein im Doppelliter (2-l-Gebinde) verwendet – dafür war online " +
-                "keine produktspezifische Nährwertangabe auffindbar (bei einfachen \"Doppler\"-Weinen " +
-                "seltener indiziert als bei Flaschenweinen). Da österreichische Wein-Kartons den " +
-                "Energiewert i. d. R. selbst aufdrucken, ist ein Blick auf das tatsächliche Gebinde " +
-                "hier schneller und verlässlicher als eine weitere Websuche – bitte dort ablesen und " +
-                "ersetzen, der obige Wert bleibt bis dahin ein allgemeiner Näherungswert."
+                "für die konkret verwendete Weinmarke Herstellerangabe verwenden. energieKj/energieKcal " +
+                "sind nur noch Referenzwerte (Rohstoffliste); für die Rezeptur-Gesamtenergie zählt " +
+                "seit der Anhang-XIV-Korrektur ausschließlich alkoholGramm (~9,47 g, aus 12 %vol " +
+                "abgeleitet) zusammen mit Fett/Kohlenhydrate/Eiweiß – ohne alkoholGramm würde der mit " +
+                "Abstand größte Energieanteil von Wein (Alkohol) in der Rezeptur rechnerisch " +
+                "verschwinden. Laut Nutzer wird konkret Spar-Rotwein im Doppelliter (2-l-Gebinde) " +
+                "verwendet – dafür war online keine produktspezifische Nährwertangabe auffindbar " +
+                "(bei einfachen \"Doppler\"-Weinen seltener indiziert als bei Flaschenweinen). Da " +
+                "österreichische Wein-Kartons den Energiewert i. d. R. selbst aufdrucken, ist ein " +
+                "Blick auf das tatsächliche Gebinde hier schneller und verlässlicher als eine weitere " +
+                "Websuche – bitte dort ablesen (Energie UND Alkoholgehalt) und ersetzen, der obige " +
+                "Wert bleibt bis dahin ein allgemeiner Näherungswert."
         ),
 
         // ---- Fett/Öl ----

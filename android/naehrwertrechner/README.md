@@ -26,6 +26,33 @@ erhalten bleibt. Für ein separat deklariertes **Abtropfgewicht** reicht sie
 NICHT aus – das wäre eine spätere Erweiterung (Diffusionsmodell oder
 Laboranalyse des Enderzeugnisses).
 
+**Energieberechnung (September 2026 korrigiert – wichtig für das
+Grundverständnis der App):** Der Brennwert einer Rezeptur wird **immer** nach
+Anhang XIV aus den aggregierten Fett-/Kohlenhydrat-/Ballaststoff-/Eiweiß-/
+Alkohol-/Säurewerten der gesamten Rezeptur neu berechnet – **nicht** durch
+Aufsummieren der einzelnen `Rohstoff.energieKj`/`energieKcal`-Werte. Grund:
+reale Lebensmitteldatenbanken (z. B. USDA) geben für zusammengesetzte
+Lebensmittel oft einen eigenständig gemessenen Energiewert an, der von der
+Anhang-XIV-Rückrechnung aus den übrigen Nährwerten abweicht (z. B. Chili:
+USDA nennt 166 kJ, die Rückrechnung aus USDAs eigenen Fett-/Kohlenhydrat-/
+Ballaststoff-/Eiweißwerten ergibt 208,7 kJ). Für eine LMIV-konforme
+Deklaration ist ausschließlich die Rückrechnung zulässig – genau eine solche
+Abweichung war Kern einer echten amtlichen Beanstandung (Amt der Kärntner
+Landesregierung, Zahl 05-LMA-BBM-469/2025-279 vom 27.08.2026) gegen ein
+Etikett mit exakt diesem Fehler. `Rohstoff.energieKj`/`energieKcal` sind
+seither reine Referenz-/Anzeigewerte (z. B. für die Rohstoffliste); die
+Rezeptur-Gesamtenergie hängt nicht mehr von ihnen ab. Details und
+Herleitung: Kommentar in `domain/NaehrwertBerechnung.kt`.
+
+Zwei zusätzliche Rohstoff-Felder tragen seither zur Energieformel bei (beide
+`Double`, Default 0.0, siehe `data/Rohstoff.kt`):
+- `organischeSaeuren` (g/100 g) – für Essig/saure Zutaten; ohne dieses Feld
+  würde die Energie von reinem Speiseessig in der Neuberechnung auf 0 fallen.
+- `alkoholGramm` (g/100 g) – für alkoholhaltige Zutaten wie Rotwein; getrennt
+  von `alkoholGehaltVol` (%vol, nur Kennzeichnung nach Art. 28 LMIV). Ohne
+  dieses Feld würde der mit Abstand größte Energieanteil von Wein rechnerisch
+  verschwinden.
+
 ## Datenqualität der Start-Rohstoffdatenbank – bitte vor Produktivnutzung lesen
 
 `data/SeedData.kt` enthält eine erste Rohstoffliste, damit die App beim ersten

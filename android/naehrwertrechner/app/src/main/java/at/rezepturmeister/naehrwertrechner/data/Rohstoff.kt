@@ -29,12 +29,36 @@ data class Rohstoff(
     // Dichte in g/ml, für Umrechnung 100 g <-> 100 ml (z. B. bei Flüssigkeiten/Laken)
     val dichte: Double? = null,
 
-    // Alkoholgehalt in % vol – nur zur Kennzeichnung, NICHT zusätzlich in die
-    // Energieberechnung eingerechnet (in handelsüblichen Nährwertangaben ist der
-    // Energiebeitrag von Alkohol bereits in Energie_kJ/Energie_kcal enthalten).
+    // Alkoholgehalt in % vol – reine Kennzeichnungsangabe (Art. 28 LMIV). Der
+    // Energiebeitrag von Alkohol fließt separat über `alkoholGramm` in die
+    // Berechnung ein (siehe dort) – NICHT aus diesem %-vol-Wert abgeleitet.
     val alkoholGehaltVol: Double? = null,
 
-    // Nährwerte pro 100 g
+    // Alkohol in Gramm pro 100 g Rohstoff – Berechnungsgrundlage für die
+    // Energieformel (Anhang XIV: 29 kJ/g bzw. 7 kcal/g), getrennt von
+    // `alkoholGehaltVol` (%vol, nur Kennzeichnung). Default 0.0: für die
+    // allermeisten Rohstoffe korrekt, nur bei alkoholhaltigen Zutaten (Wein,
+    // manche Essigsorten) ungleich null.
+    val alkoholGramm: Double = 0.0,
+
+    // Organische Säuren in Gramm pro 100 g Rohstoff – Berechnungsgrundlage für
+    // die Energieformel (Anhang XIV: 13 kJ/g bzw. 3 kcal/g). Default 0.0: für
+    // die allermeisten Lebensmittel korrekt (Fette, Zucker, Fleisch, die
+    // meisten Gemüse enthalten praktisch keine relevanten Mengen), nur bei
+    // Essig/sauren Zutaten ungleich null. Bewusst NICHT nullable wie die
+    // übrigen Makronährstoffe, weil 0 hier fast immer die fachlich richtige
+    // Annahme ist – anders als z. B. bei Fett oder Eiweiß.
+    val organischeSaeuren: Double = 0.0,
+
+    // Nährwerte pro 100 g. WICHTIG: energieKj/energieKcal sind reine
+    // Referenz-/Anzeigewerte (z. B. für die Rohstoffliste) und werden NICHT
+    // mehr direkt in die Rezeptur-Gesamtenergie summiert – siehe
+    // NaehrwertBerechnung.berechne() für den Hintergrund (Art. 31/Anhang XIV
+    // LMIV verlangt, dass der deklarierte Energiewert aus den deklarierten
+    // Fett-/Kohlenhydrat-/Eiweiß-/Ballaststoff-/Alkohol-/Säurewerten
+    // RECHNERISCH ABGELEITET wird, nicht aus einer unabhängig bestimmten
+    // "gemessenen" Energie – reale Lebensmitteldatenbanken wie USDA weichen
+    // davon regelmäßig ab, siehe Kommentar in NaehrwertBerechnung.kt).
     val energieKj: Double? = null,
     val energieKcal: Double? = null,
     val fett: Double? = null,
