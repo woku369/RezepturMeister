@@ -50,11 +50,16 @@ private fun RohstoffZeile(rohstoff: Rohstoff, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(rohstoff.name, style = MaterialTheme.typography.titleMedium)
-                if (!rohstoff.istVollstaendig()) {
+                if (rohstoff.erfordertWarnhinweis()) {
                     Text(
                         "⚠ unvollständig",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.error
+                    )
+                } else if (!rohstoff.istVollstaendig()) {
+                    Text(
+                        "ℹ unvollständig, als vernachlässigbar markiert",
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
             }

@@ -14,7 +14,7 @@ object NaehrwertDeklarationFormatter {
             String.format(Locale.GERMANY, "%.${nachkomma}f", wert)
 
         return buildString {
-            appendLine("Nährwertdeklaration (pro 100 g)")
+            appendLine("Nährwertdeklaration (${ergebnis.bezugsgroesse.anzeigename})")
             appendLine("Brennwert: ${z(ergebnis.energieKj, 0)} kJ / ${z(ergebnis.energieKcal, 0)} kcal")
             appendLine("Fett: ${z(ergebnis.fett)} g")
             appendLine("  davon gesättigte Fettsäuren: ${z(ergebnis.gesaettigteFettsaeuren)} g")

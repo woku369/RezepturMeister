@@ -3,9 +3,11 @@ package at.rezepturmeister.naehrwertrechner
 import at.rezepturmeister.naehrwertrechner.data.NaehrwertQuelle
 import at.rezepturmeister.naehrwertrechner.data.Rohstoff
 import at.rezepturmeister.naehrwertrechner.data.SeedData
+import at.rezepturmeister.naehrwertrechner.domain.Bezugsgroesse
 import at.rezepturmeister.naehrwertrechner.domain.NaehrwertBerechnung
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -93,6 +95,63 @@ class NaehrwertBerechnungTest {
         // 10 g Alkohol * 29 kJ/g bzw. 7 kcal/g (Anhang XIV)
         assertEquals(290.0, weinErgebnis.energieKj, 0.01)
         assertEquals(70.0, weinErgebnis.energieKcal, 0.01)
+    }
+
+    @Test
+    fun `Bezugsgroesse pro 100ml normiert auf das gemessene Gesamtvolumen statt auf das Gewicht`() {
+        // 100 g reiner Zucker in einem Ansatz mit gemessenem Gesamtvolumen 200 ml (z. B.
+        // weil die Zutaten sich beim Mischen nicht additiv zu einem Volumen summieren) ->
+        // pro 100 ml müssen es 50 g Zucker sein (nicht 100 g wie bei "pro 100 g").
+        val ergebnis = NaehrwertBerechnung.berechne(
+            zutaten = listOf(NaehrwertBerechnung.ZutatMenge(zucker, 100.0)),
+            bezugsgroesse = Bezugsgroesse.PRO_100_ML,
+            gesamtvolumenMl = 200.0
+        )
+        assertEquals(50.0, ergebnis.kohlenhydrate, 0.001)
+        assertEquals(Bezugsgroesse.PRO_100_ML, ergebnis.bezugsgroesse)
+        assertEquals(200.0, ergebnis.gesamtvolumenMl)
+        // Gesamtgewicht (physische Masse) bleibt unabhängig von der Bezugsgröße korrekt.
+        assertEquals(100.0, ergebnis.gesamtGewichtGramm, 0.001)
+    }
+
+    @Test
+    fun `Bezugsgroesse pro 100ml ohne Gesamtvolumen wirft statt still falsch zu rechnen`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            NaehrwertBerechnung.berechne(
+                zutaten = listOf(NaehrwertBerechnung.ZutatMenge(zucker, 100.0)),
+                bezugsgroesse = Bezugsgroesse.PRO_100_ML,
+                gesamtvolumenMl = null
+            )
+        }
+    }
+
+    @Test
+    fun `als vernachlaessigbar markierter Rohstoff loest keine unvollstaendig-Warnung aus`() {
+        val mazerat = Rohstoff(
+            name = "Kraeutermazerat 53 Prozent",
+            alkoholGramm = NaehrwertBerechnung.alkoholGrammAusVol(53.0),
+            vernachlaessigbar = true
+            // fett/kohlenhydrate/etc. bleiben null - unbekannt, aber bewusst akzeptiert
+        )
+        val ergebnis = NaehrwertBerechnung.berechne(
+            listOf(NaehrwertBerechnung.ZutatMenge(mazerat, 100.0))
+        )
+        assertTrue(
+            "Ein als vernachlässigbar markierter Rohstoff darf die Deklaration nicht blockieren",
+            ergebnis.istVollstaendig
+        )
+        assertEquals(emptyList<String>(), ergebnis.fehlendeDaten)
+        assertEquals(listOf("Kraeutermazerat 53 Prozent"), ergebnis.alsVernachlaessigbarAkzeptiert)
+        // Der bekannte Alkoholgehalt fließt trotzdem in die Energie ein (53*0,789 = 41,817 g).
+        assertEquals(41.817, ergebnis.alkohol, 0.001)
+    }
+
+    @Test
+    fun `alkoholGrammAusVol leitet Alkoholgramm aus Vol-Prozent und Dichte her`() {
+        // 53 %vol, Standarddichte 1,0 g/ml -> 53 * 0,789 = 41,817 g/100g
+        assertEquals(41.817, NaehrwertBerechnung.alkoholGrammAusVol(53.0), 0.0001)
+        // 12 %vol bei Produktdichte 0,99 g/ml (z. B. Rotwein) -> 12*0,789/0,99
+        assertEquals(9.564, NaehrwertBerechnung.alkoholGrammAusVol(12.0, 0.99), 0.001)
     }
 
     @Test

@@ -77,10 +77,23 @@ data class Rohstoff(
     // (manuell oder per Foto-Etikett-Erkennung). Schützt den Datensatz davor, beim
     // nächsten App-Start durch RohstoffDao.syncSeedDaten() wieder mit dem SeedData-Wert
     // überschrieben zu werden – siehe dort.
-    val vomNutzerBearbeitet: Boolean = false
+    val vomNutzerBearbeitet: Boolean = false,
+
+    // true, wenn eine unvollständige Datenbasis bei diesem Rohstoff bewusst als
+    // vernachlässigbar akzeptiert wurde (z. B. ein Kräutermazerat ohne eigene
+    // Nährwertdaten aber mit bekanntem Alkoholgehalt, oder eine Gewürzmischung in
+    // sehr kleiner Einsatzmenge). Ändert NICHT das Ergebnis von istVollstaendig()
+    // (das bleibt eine objektive Aussage über die Datenlage), unterdrückt aber die
+    // "unvollständig"-Warnung in Rezepturen, die diesen Rohstoff verwenden – siehe
+    // erfordertWarnhinweis(). Formalisiert das bisher nur per Freitext in
+    // quelleHinweis dokumentierte "vernachlässigt"-Muster als eigenes Feld.
+    val vernachlaessigbar: Boolean = false
 ) {
     /** Hat der Rohstoff alle Pflichtwerte für eine vollständige Deklaration? */
     fun istVollstaendig(): Boolean =
         listOf(energieKj, energieKcal, fett, gesaettigteFettsaeuren, kohlenhydrate, zucker, ballaststoffe, eiweiss, salz)
             .all { it != null }
+
+    /** Soll eine unvollständige Datenbasis dieses Rohstoffs eine Warnung auslösen? */
+    fun erfordertWarnhinweis(): Boolean = !istVollstaendig() && !vernachlaessigbar
 }

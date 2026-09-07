@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import at.rezepturmeister.naehrwertrechner.data.NaehrwertQuelle
 import at.rezepturmeister.naehrwertrechner.data.Rohstoff
+import at.rezepturmeister.naehrwertrechner.domain.NaehrwertBerechnung
 import at.rezepturmeister.naehrwertrechner.ocr.EtikettErgebnis
 import at.rezepturmeister.naehrwertrechner.ocr.EtikettParser
 import at.rezepturmeister.naehrwertrechner.ocr.EtikettScanner
@@ -70,6 +72,11 @@ fun RohstoffEditorScreen(
     var ballaststoffe by remember { mutableStateOf(bearbeiteterRohstoff?.ballaststoffe?.toString() ?: "") }
     var eiweiss by remember { mutableStateOf(bearbeiteterRohstoff?.eiweiss?.toString() ?: "") }
     var salz by remember { mutableStateOf(bearbeiteterRohstoff?.salz?.toString() ?: "") }
+    var dichte by remember { mutableStateOf(bearbeiteterRohstoff?.dichte?.toString() ?: "") }
+    var alkoholGehaltVol by remember { mutableStateOf(bearbeiteterRohstoff?.alkoholGehaltVol?.toString() ?: "") }
+    var alkoholGramm by remember { mutableStateOf(bearbeiteterRohstoff?.alkoholGramm?.toString() ?: "0.0") }
+    var organischeSaeuren by remember { mutableStateOf(bearbeiteterRohstoff?.organischeSaeuren?.toString() ?: "0.0") }
+    var vernachlaessigbar by remember { mutableStateOf(bearbeiteterRohstoff?.vernachlaessigbar ?: false) }
     var quelle by remember { mutableStateOf(bearbeiteterRohstoff?.quelle ?: NaehrwertQuelle.UNBEKANNT) }
     var quelleHinweis by remember { mutableStateOf(bearbeiteterRohstoff?.quelleHinweis ?: "") }
     var quelleDropdownOffen by remember { mutableStateOf(false) }
@@ -143,6 +150,12 @@ fun RohstoffEditorScreen(
     }
 
     fun zahl(text: String): Double? = text.replace(",", ".").toDoubleOrNull()
+
+    fun leiteAlkoholGrammAb() {
+        val vol = zahl(alkoholGehaltVol) ?: return
+        val produktdichte = zahl(dichte) ?: 1.0
+        alkoholGramm = NaehrwertBerechnung.alkoholGrammAusVol(vol, produktdichte).toString()
+    }
 
     LazyColumn(modifier = modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         item {
@@ -259,6 +272,68 @@ fun RohstoffEditorScreen(
         }
 
         item {
+            Column {
+                Text("Getränke / Flüssigkeiten", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "Dichte für die Umrechnung ml↔g bei der Rezeptureingabe. Alkoholgehalt (%vol) " +
+                        "ist nur die Kennzeichnungsangabe – für die Energieberechnung wird daraus " +
+                        "\"Alkohol (g)\" abgeleitet (z. B. für ein Kräutermazerat ohne eigene " +
+                        "Nährwertdaten, aber mit bekanntem Alkoholgehalt).",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = dichte, onValueChange = { dichte = it },
+                    label = { Text("Dichte (g/ml)") }, modifier = Modifier.fillMaxWidth().weight(1f)
+                )
+                OutlinedTextField(
+                    value = alkoholGehaltVol, onValueChange = { alkoholGehaltVol = it },
+                    label = { Text("Alkoholgehalt (%vol)") }, modifier = Modifier.fillMaxWidth().weight(1f)
+                )
+            }
+        }
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                OutlinedTextField(
+                    value = alkoholGramm, onValueChange = { alkoholGramm = it },
+                    label = { Text("Alkohol (g pro 100g, für Energieformel)") },
+                    modifier = Modifier.fillMaxWidth().weight(1f)
+                )
+                OutlinedButton(onClick = { leiteAlkoholGrammAb() }, enabled = zahl(alkoholGehaltVol) != null) {
+                    Text("aus %vol")
+                }
+            }
+        }
+        item {
+            OutlinedTextField(
+                value = organischeSaeuren, onValueChange = { organischeSaeuren = it },
+                label = { Text("Organische Säuren (g pro 100g, z. B. Essig)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            Row(
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 4.dp)
+            ) {
+                Checkbox(checked = vernachlaessigbar, onCheckedChange = { vernachlaessigbar = it })
+                Column {
+                    Text("Unvollständige Nährwertdaten als vernachlässigbar markieren")
+                    Text(
+                        "Unterdrückt die \"unvollständig\"-Warnung in Rezepturen mit diesem Rohstoff " +
+                            "(z. B. Gewürz in geringer Menge ohne auffindbare Nährwertangabe). Ändert " +
+                            "nichts an fehlenden Werten selbst – bitte in Quellenhinweis begründen.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        }
+
+        item {
             ExposedDropdownMenuBox(expanded = quelleDropdownOffen, onExpandedChange = { quelleDropdownOffen = it }) {
                 OutlinedTextField(
                     value = quelle.anzeigename,
@@ -308,6 +383,11 @@ fun RohstoffEditorScreen(
                                 ballaststoffe = zahl(ballaststoffe),
                                 eiweiss = zahl(eiweiss),
                                 salz = zahl(salz),
+                                dichte = zahl(dichte),
+                                alkoholGehaltVol = zahl(alkoholGehaltVol),
+                                alkoholGramm = zahl(alkoholGramm) ?: 0.0,
+                                organischeSaeuren = zahl(organischeSaeuren) ?: 0.0,
+                                vernachlaessigbar = vernachlaessigbar,
                                 quelle = quelle,
                                 quelleHinweis = quelleHinweis
                             )

@@ -62,8 +62,13 @@ object XlsxExporter {
         ws.value(zeile, 0, "Gesamtansatz (g)")
         ws.value(zeile, 1, ergebnis.gesamtGewichtGramm)
         zeile++
+        ergebnis.gesamtvolumenMl?.let {
+            ws.value(zeile, 0, "Gesamtvolumen (ml, gemessen)")
+            ws.value(zeile, 1, it)
+            zeile++
+        }
         ws.value(zeile, 0, "Bezugsgröße")
-        ws.value(zeile, 1, "pro 100 g")
+        ws.value(zeile, 1, ergebnis.bezugsgroesse.anzeigename)
         zeile += 2
 
         ws.value(zeile, 0, "Nährwert")
@@ -110,6 +115,16 @@ object XlsxExporter {
             }
         }
 
+        if (ergebnis.alsVernachlaessigbarAkzeptiert.isNotEmpty()) {
+            zeile++
+            ws.value(zeile, 0, "Unvollständige Daten, bewusst als vernachlässigbar akzeptiert:")
+            zeile++
+            ergebnis.alsVernachlaessigbarAkzeptiert.forEach { name ->
+                ws.value(zeile, 0, "  $name")
+                zeile++
+            }
+        }
+
         ws.width(0, 40.0)
         ws.width(1, 14.0)
         ws.width(2, 10.0)
@@ -135,7 +150,7 @@ object XlsxExporter {
         ws.value(zeile, 1, rezepturName)
         zeile++
         ws.value(zeile, 0, "Bezugsgröße")
-        ws.value(zeile, 1, "pro 100 g")
+        ws.value(zeile, 1, ergebnis.bezugsgroesse.anzeigename)
         zeile += 2
 
         val kopfzeile = zeile
@@ -214,12 +229,17 @@ object XlsxExporter {
             ws.value(zeile, 0, zutat.name)
             ws.value(zeile, 1, zutat.gewichtGramm)
             ws.value(zeile, 2, zutat.prozent)
-            ws.value(zeile, 3, if (zutat.hatVollstaendigeNaehrwertdaten) "Ja" else "Nein")
+            val status = when {
+                zutat.hatVollstaendigeNaehrwertdaten -> "Ja"
+                zutat.alsVernachlaessigbarMarkiert -> "Nein (als vernachlässigbar akzeptiert)"
+                else -> "Nein"
+            }
+            ws.value(zeile, 3, status)
         }
 
         ws.width(0, 32.0)
         ws.width(1, 12.0)
         ws.width(2, 12.0)
-        ws.width(3, 22.0)
+        ws.width(3, 34.0)
     }
 }

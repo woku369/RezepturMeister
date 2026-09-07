@@ -3,7 +3,8 @@
 Android-App zur Nährwertberechnung von Lebensmittelrezepturen durch Eingabe von
 Zutaten und Mengen. Erste Zielgruppen: eingelegtes Gemüse (Gurken, Paprika,
 Chili) in Essig-Zucker-Salz-Lake, Gemüsezubereitungen (Zwiebel, Chili, Paprika,
-Speck, Essig, Zucker, Ahornsirup, Gelierzucker, Pektin, Rotwein) und Senf.
+Speck, Essig, Zucker, Ahornsirup, Gelierzucker, Pektin, Rotwein), Senf und
+(seit September 2026) auch (alkoholische) Getränke/Mazerate.
 
 Eigenständiges Modul innerhalb des RezepturMeister-Repos, technisch getrennt
 vom bestehenden WPF/.NET-Code (unterschiedlicher Stack, kein gemeinsamer
@@ -162,6 +163,53 @@ Ein über den Editor angelegter/geänderter Rohstoff wird als
 offene Problem (siehe vorheriger Absatz zu `syncSeedDaten()`) ist damit
 gelöst.
 
+## Getränke, Mazerate & Bezugsgröße pro 100 ml (September 2026)
+
+Drei zusammenhängende Erweiterungen für (alkoholische) Getränke:
+
+**Zutateneingabe in g oder ml.** Beim Hinzufügen einer Zutat im Tab "Zutaten"
+kann die Menge wahlweise in Gramm oder Millilitern eingegeben werden. Die
+Umrechnung erfolgt sofort über die Dichte des Rohstoffs (`Rohstoff.dichte`,
+g/ml) – intern rechnet `NaehrwertBerechnung` ausschließlich mit Gramm
+(`ZutatMenge.mengeGramm`), die ursprünglich eingegebene Menge/Einheit bleibt
+zusätzlich für die Anzeige erhalten (`eingegebeneMenge`/`eingegebeneEinheit`).
+Ist für einen Rohstoff keine Dichte hinterlegt, wird die ml-Eingabe mit einer
+Fehlermeldung blockiert statt stillschweigend eine Dichte zu unterstellen.
+
+**Bezugsgröße pro 100 g oder pro 100 ml.** Im Tab "Zutaten" wählbar (Art. 32
+LMIV: bei Flüssigkeiten/Getränken ist pro 100 ml üblich). Bei "pro 100 ml"
+verlangt die App zusätzlich das **gemessene Gesamtvolumen des fertigen
+Ansatzes** – bewusst keine Summe der eingegebenen Zutatenvolumina, weil sich
+Alkohol und Wasser beim Mischen nicht additiv verhalten (das Gesamtvolumen
+einer Mischung ist kleiner als die Summe der Einzelvolumina). Dieselbe Logik
+wie beim Abtropfgewicht bei eingelegtem Gemüse: gemessen statt
+zurückgerechnet. `NaehrwertBerechnung.berechne()` wirft eine Exception, wenn
+"pro 100 ml" ohne Gesamtvolumen aufgerufen wird – die UI fängt das ab, indem
+sie in diesem Zustand einfach kein Ergebnis anzeigt statt abzustürzen.
+
+**Alkoholgehalt (%vol) → Alkohol (g) für Mazerate ohne eigene Nährwertdaten.**
+Im Rohstoff-Editor lässt sich für Zutaten wie ein Kräutermazerat (z. B. 53 %
+vol, keine eigene Nährwerttabelle) der Alkoholgehalt in %vol eintragen; ein
+Button leitet daraus mit `NaehrwertBerechnung.alkoholGrammAusVol()` den für
+die Energieformel nötigen Wert in Gramm/100g her (%vol × Ethanoldichte
+0,789 g/ml ÷ Produktdichte – dieselbe Rechnung, die bisher händisch für
+Rotwein in `SeedData.kt` dokumentiert war). Wie bei der Foto-Etikett-
+Erkennung ist das ein Vorschlag in ein weiterhin editierbares Feld, keine
+automatische Übernahme.
+
+**Vernachlässigbar-Checkbox** (`Rohstoff.vernachlaessigbar`, Schema-Version
+5). Formalisiert das bisher nur per Freitext in `quelleHinweis` dokumentierte
+Muster ("Wert unbekannt, aber Einsatzmenge zu gering für eine seriöse
+Schätzung – auf Wunsch vernachlässigt"). `istVollstaendig()` bleibt eine
+objektive Aussage über die Datenlage; `erfordertWarnhinweis()` unterdrückt
+die "unvollständig"-Warnung nur, wenn die Lücke bewusst als vernachlässigbar
+markiert wurde – akzeptierte Lücken werden weiterhin transparent ausgewiesen
+(`NaehrwertErgebnis.alsVernachlaessigbarAkzeptiert`), nicht stillschweigend
+versteckt. Damit lässt sich z. B. ein Kräutermazerat mit bekanntem
+Alkoholgehalt, aber unbekannten sonstigen Nährwerten, korrekt abbilden: der
+Alkohol zählt weiter zur Energie, die restlichen unbekannten Felder blockieren
+die Deklaration nicht mehr.
+
 ## APK bauen
 
 **Ohne eigene Installation (empfohlen):** Der Workflow
@@ -195,7 +243,7 @@ Entwicklungsumgebung dieser Sitzung selbst hat keinen Netzwerkzugriff auf das
 Google-Maven-Repository und kann nicht lokal bauen/testen). Aktueller Stand:
 grün, siehe jeweils neuester Lauf unter GitHub → Actions.
 
-## Datenbank-Updates (Schema-Versionen 2–4)
+## Datenbank-Updates (Schema-Versionen 2–5)
 
 - **Version 2:** `Rohstoff.name` erhält einen eindeutigen Index (Migration 1→2).
 - **Version 3:** neue Spalten `alkoholGramm`/`organischeSaeuren` für die
@@ -203,6 +251,8 @@ grün, siehe jeweils neuester Lauf unter GitHub → Actions.
 - **Version 4:** neue Spalte `vomNutzerBearbeitet` (Default `false`/0), damit
   über den Rohstoff-Editor angelegte/geänderte Rohstoffe von der
   `SeedData`-Synchronisation nicht mehr überschrieben werden (Migration 3→4).
+- **Version 5:** neue Spalte `vernachlaessigbar` (Default `false`/0) – siehe
+  Abschnitt "Getränke, Mazerate & Bezugsgröße pro 100 ml" (Migration 4→5).
 
 Wer die App vor einem dieser Updates bereits installiert hatte: Room führt
 beim nächsten Start alle nötigen Migrationen automatisch aus, bestehende

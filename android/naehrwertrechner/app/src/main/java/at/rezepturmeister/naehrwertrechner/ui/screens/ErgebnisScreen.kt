@@ -33,9 +33,10 @@ fun ErgebnisScreen(ergebnis: NaehrwertErgebnis?, rezepturName: String = "Rezeptu
             return@Column
         }
 
-        Text("Nährwertdeklaration (pro 100 g)", style = MaterialTheme.typography.titleLarge)
+        Text("Nährwertdeklaration (${ergebnis.bezugsgroesse.anzeigename})", style = MaterialTheme.typography.titleLarge)
         Text(
-            "Gesamtansatz: ${fmt(ergebnis.gesamtGewichtGramm, 0)} g",
+            "Gesamtansatz: ${fmt(ergebnis.gesamtGewichtGramm, 0)} g" +
+                (ergebnis.gesamtvolumenMl?.let { " · Gesamtvolumen: ${fmt(it, 0)} ml" } ?: ""),
             style = MaterialTheme.typography.bodySmall
         )
         Divider(Modifier.padding(vertical = 8.dp))
@@ -75,9 +76,13 @@ fun ErgebnisScreen(ergebnis: NaehrwertErgebnis?, rezepturName: String = "Rezeptu
         Divider(Modifier.padding(vertical = 8.dp))
         Text("Zutatenliste (für Kennzeichnung, absteigend sortiert)", style = MaterialTheme.typography.titleMedium)
         ergebnis.zutatenliste.forEach { zutat ->
+            val hinweis = when {
+                zutat.hatVollstaendigeNaehrwertdaten -> ""
+                zutat.alsVernachlaessigbarMarkiert -> "ℹ unvollständig, als vernachlässigbar markiert"
+                else -> "⚠ Nährwertdaten unvollständig"
+            }
             Text(
-                "${zutat.name} – ${fmt(zutat.prozent)} % " +
-                    if (!zutat.hatVollstaendigeNaehrwertdaten) "⚠ Nährwertdaten unvollständig" else "",
+                "${zutat.name} – ${fmt(zutat.prozent)} % $hinweis",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -94,6 +99,15 @@ fun ErgebnisScreen(ergebnis: NaehrwertErgebnis?, rezepturName: String = "Rezeptu
             ergebnis.fehlendeDaten.forEach {
                 Text("- $it", color = MaterialTheme.colorScheme.error)
             }
+        }
+
+        if (ergebnis.alsVernachlaessigbarAkzeptiert.isNotEmpty()) {
+            Divider(Modifier.padding(vertical = 8.dp))
+            Text(
+                "Unvollständige Daten, bewusst als vernachlässigbar akzeptiert:",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            ergebnis.alsVernachlaessigbarAkzeptiert.forEach { Text("- $it") }
         }
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import at.rezepturmeister.naehrwertrechner.data.Rohstoff
+import at.rezepturmeister.naehrwertrechner.domain.Bezugsgroesse
 import at.rezepturmeister.naehrwertrechner.ui.NaehrwertViewModel
 import at.rezepturmeister.naehrwertrechner.ui.NaehrwertViewModelFactory
 import at.rezepturmeister.naehrwertrechner.ui.screens.ErgebnisScreen
@@ -51,7 +52,12 @@ private fun NaehrwertRechnerApp(viewModel: NaehrwertViewModel) {
     val rohstoffe by viewModel.rohstoffe.collectAsState()
     val aktuelleZutaten by viewModel.aktuelleZutaten.collectAsState()
     var ergebnis by remember { mutableIntStateOf(0) } // Trigger für Neuberechnung
-    val letztesErgebnis = remember(ergebnis, aktuelleZutaten) { viewModel.berechneAktuelleRezeptur() }
+    var bezugsgroesse by remember { mutableStateOf(Bezugsgroesse.PRO_100_G) }
+    var gesamtvolumenMlText by remember { mutableStateOf("") }
+    val gesamtvolumenMl = gesamtvolumenMlText.replace(",", ".").toDoubleOrNull()
+    val letztesErgebnis = remember(ergebnis, aktuelleZutaten, bezugsgroesse, gesamtvolumenMl) {
+        viewModel.berechneAktuelleRezeptur(bezugsgroesse, gesamtvolumenMl)
+    }
 
     // null = Rohstoffliste anzeigen; sonst Editor für einen neuen (Rohstoff mit id==0
     // als Platzhalter reicht hier nicht, deshalb eigenes Flag) oder bestehenden Rohstoff.
@@ -79,6 +85,10 @@ private fun NaehrwertRechnerApp(viewModel: NaehrwertViewModel) {
                 aktuelleZutaten = aktuelleZutaten,
                 onZutatHinzufuegen = viewModel::zutatHinzufuegen,
                 onZutatEntfernen = viewModel::zutatEntfernen,
+                bezugsgroesse = bezugsgroesse,
+                onBezugsgroesseChange = { bezugsgroesse = it },
+                gesamtvolumenMlText = gesamtvolumenMlText,
+                onGesamtvolumenMlChange = { gesamtvolumenMlText = it },
                 onBerechnen = { ergebnis++; tabIndex = 2 },
                 onSpeichern = { name -> viewModel.rezepturSpeichern(name) },
                 modifier = Modifier.padding(innerPadding)

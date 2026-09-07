@@ -6,6 +6,7 @@ import at.rezepturmeister.naehrwertrechner.data.AppDatabase
 import at.rezepturmeister.naehrwertrechner.data.Rezeptur
 import at.rezepturmeister.naehrwertrechner.data.RezepturZutat
 import at.rezepturmeister.naehrwertrechner.data.Rohstoff
+import at.rezepturmeister.naehrwertrechner.domain.Bezugsgroesse
 import at.rezepturmeister.naehrwertrechner.domain.NaehrwertBerechnung
 import at.rezepturmeister.naehrwertrechner.domain.NaehrwertErgebnis
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,16 +33,32 @@ class NaehrwertViewModel(private val db: AppDatabase) : ViewModel() {
         _rohstoffFehler.value = null
     }
 
-    fun zutatHinzufuegen(rohstoff: Rohstoff, mengeGramm: Double) {
-        _aktuelleZutaten.value = _aktuelleZutaten.value + NaehrwertBerechnung.ZutatMenge(rohstoff, mengeGramm)
+    fun zutatHinzufuegen(zutat: NaehrwertBerechnung.ZutatMenge) {
+        _aktuelleZutaten.value = _aktuelleZutaten.value + zutat
     }
 
     fun zutatEntfernen(index: Int) {
         _aktuelleZutaten.value = _aktuelleZutaten.value.filterIndexed { i, _ -> i != index }
     }
 
-    fun berechneAktuelleRezeptur(): NaehrwertErgebnis? =
-        _aktuelleZutaten.value.takeIf { it.isNotEmpty() }?.let { NaehrwertBerechnung.berechne(it) }
+    /**
+     * Bei Bezugsgröße PRO_100_ML muss [gesamtvolumenMl] gesetzt sein (gemessenes
+     * Gesamtvolumen, siehe NaehrwertBerechnung.berechne()) – fehlt es, wird hier
+     * bewusst null zurückgegeben statt NaehrwertBerechnung.berechne() aufzurufen,
+     * dessen require() sonst eine Exception werfen würde (die UI ruft diese Funktion
+     * reaktiv bei jeder Zustandsänderung auf, auch während der Nutzer das
+     * Gesamtvolumen noch eingibt).
+     */
+    fun berechneAktuelleRezeptur(
+        bezugsgroesse: Bezugsgroesse = Bezugsgroesse.PRO_100_G,
+        gesamtvolumenMl: Double? = null
+    ): NaehrwertErgebnis? {
+        val zutaten = _aktuelleZutaten.value.takeIf { it.isNotEmpty() } ?: return null
+        if (bezugsgroesse == Bezugsgroesse.PRO_100_ML && (gesamtvolumenMl == null || gesamtvolumenMl <= 0.0)) {
+            return null
+        }
+        return NaehrwertBerechnung.berechne(zutaten, bezugsgroesse, gesamtvolumenMl)
+    }
 
     fun rezepturSpeichern(name: String, version: String = "1.0") {
         val zutaten = _aktuelleZutaten.value

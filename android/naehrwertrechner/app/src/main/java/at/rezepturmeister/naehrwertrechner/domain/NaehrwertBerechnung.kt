@@ -41,7 +41,35 @@ import at.rezepturmeister.naehrwertrechner.data.Rohstoff
  */
 object NaehrwertBerechnung {
 
-    data class ZutatMenge(val rohstoff: Rohstoff, val mengeGramm: Double)
+    /**
+     * @param mengeGramm kanonische Menge in Gramm – einzige für die Berechnung
+     *   verwendete Größe.
+     * @param eingegebeneMenge wie vom Nutzer eingegeben (z. B. in ml), nur für die
+     *   Anzeige/Nachvollziehbarkeit. Bei Einheit GRAMM identisch zu [mengeGramm].
+     * @param eingegebeneEinheit Einheit von [eingegebeneMenge].
+     */
+    data class ZutatMenge(
+        val rohstoff: Rohstoff,
+        val mengeGramm: Double,
+        val eingegebeneMenge: Double = mengeGramm,
+        val eingegebeneEinheit: Mengeneinheit = Mengeneinheit.GRAMM
+    )
+
+    // Dichte von reinem Ethanol, für die Herleitung von alkoholGramm aus einem
+    // bekannten Alkoholgehalt in %vol (z. B. bei einem Kräutermazerat ohne eigene
+    // Nährwertdaten) – siehe alkoholGrammAusVol().
+    const val DICHTE_ETHANOL_G_PRO_ML = 0.789
+
+    /**
+     * Leitet den Alkoholgehalt in Gramm pro 100 g Produkt aus dem Alkoholgehalt in
+     * %vol her (dieselbe Rechnung, die bisher händisch für Rotwein in SeedData.kt
+     * dokumentiert war: %vol × Ethanoldichte ÷ Produktdichte). [dichteProdukt] ist
+     * die Dichte des GESAMTEN Produkts in g/ml (Default 1,0 – für ein wässrig-
+     * alkoholisches Mazerat eine übliche Näherung, aber keine Messung; bei
+     * abweichender tatsächlicher Dichte diese angeben statt den Default zu übernehmen).
+     */
+    fun alkoholGrammAusVol(volProzent: Double, dichteProdukt: Double = 1.0): Double =
+        volProzent * DICHTE_ETHANOL_G_PRO_ML / dichteProdukt
 
     // Anhang XIV VO (EU) 1169/2011 Umrechnungsfaktoren. Bewusst nicht privat, damit
     // z. B. der XLSX-Export dieselben Faktoren für eine nachvollziehbare
@@ -62,11 +90,28 @@ object NaehrwertBerechnung {
     const val KCAL_PRO_G_ALKOHOL = 7.0
     const val KCAL_PRO_G_ORGANISCHE_SAEUREN = 3.0
 
-    fun berechne(zutaten: List<ZutatMenge>): NaehrwertErgebnis {
+    fun berechne(
+        zutaten: List<ZutatMenge>,
+        bezugsgroesse: Bezugsgroesse = Bezugsgroesse.PRO_100_G,
+        gesamtvolumenMl: Double? = null
+    ): NaehrwertErgebnis {
         require(zutaten.isNotEmpty()) { "Eine Rezeptur benötigt mindestens eine Zutat." }
 
         val gesamtGewicht = zutaten.sumOf { it.mengeGramm }
         require(gesamtGewicht > 0.0) { "Gesamtgewicht muss größer als 0 sein." }
+
+        // Bei "pro 100 ml" NICHT die eingegebenen Zutatenvolumina aufsummieren: Alkohol
+        // und Wasser mischen sich nicht additiv (das Gesamtvolumen einer Mischung ist
+        // kleiner als die Summe der Einzelvolumina), eine Rückrechnung aus den
+        // Zutatenmengen wäre daher unehrlich genau. Stattdessen wird das tatsächliche,
+        // gemessene Gesamtvolumen des fertigen Ansatzes verlangt (analog zum
+        // Abtropfgewicht bei eingelegtem Gemüse: gemessen statt zurückgerechnet).
+        if (bezugsgroesse == Bezugsgroesse.PRO_100_ML) {
+            require(gesamtvolumenMl != null && gesamtvolumenMl > 0.0) {
+                "Für die Bezugsgröße 'pro 100 ml' muss das gemessene Gesamtvolumen des " +
+                    "fertigen Ansatzes angegeben werden (nicht aus den Zutatenmengen ableitbar)."
+            }
+        }
 
         fun summeNullable(selector: (Rohstoff) -> Double?): Double =
             zutaten.sumOf { (rohstoff, menge) ->
@@ -78,7 +123,12 @@ object NaehrwertBerechnung {
             zutaten.sumOf { (rohstoff, menge) -> selector(rohstoff) * menge / 100.0 }
 
         val fehlendeDaten = zutaten
-            .filter { !it.rohstoff.istVollstaendig() }
+            .filter { it.rohstoff.erfordertWarnhinweis() }
+            .map { it.rohstoff.name }
+            .distinct()
+
+        val alsVernachlaessigbarAkzeptiert = zutaten
+            .filter { !it.rohstoff.istVollstaendig() && it.rohstoff.vernachlaessigbar }
             .map { it.rohstoff.name }
             .distinct()
 
@@ -89,22 +139,28 @@ object NaehrwertBerechnung {
                     name = rohstoff.name,
                     gewichtGramm = menge,
                     prozent = menge / gesamtGewicht * 100.0,
-                    hatVollstaendigeNaehrwertdaten = rohstoff.istVollstaendig()
+                    hatVollstaendigeNaehrwertdaten = rohstoff.istVollstaendig(),
+                    alsVernachlaessigbarMarkiert = rohstoff.vernachlaessigbar
                 )
             }
 
-        // Faktor, um die Summenwerte (bezogen auf Gesamtgewicht) auf "pro 100 g" zu normieren
-        val faktorPro100g = 100.0 / gesamtGewicht
+        // Faktor, um die Summenwerte (bezogen auf das Gesamtgewicht in Gramm) auf die
+        // gewählte Bezugsgröße zu normieren – bei "pro 100 ml" bleibt der Zähler (die
+        // Nährstoffmenge in Gramm) unverändert, nur der Nenner wechselt vom
+        // Gesamtgewicht auf das gemessene Gesamtvolumen (Standardverfahren für die
+        // Nährwertdeklaration von Flüssigkeiten, z. B. "3,5 g Fett pro 100 ml").
+        val bezugsmenge = if (bezugsgroesse == Bezugsgroesse.PRO_100_ML) gesamtvolumenMl!! else gesamtGewicht
+        val faktor = 100.0 / bezugsmenge
 
-        val fett = summeNullable { it.fett } * faktorPro100g
-        val gesaettigteFettsaeuren = summeNullable { it.gesaettigteFettsaeuren } * faktorPro100g
-        val kohlenhydrate = summeNullable { it.kohlenhydrate } * faktorPro100g
-        val zucker = summeNullable { it.zucker } * faktorPro100g
-        val ballaststoffe = summeNullable { it.ballaststoffe } * faktorPro100g
-        val eiweiss = summeNullable { it.eiweiss } * faktorPro100g
-        val salz = summeNullable { it.salz } * faktorPro100g
-        val alkohol = summe { it.alkoholGramm } * faktorPro100g
-        val organischeSaeuren = summe { it.organischeSaeuren } * faktorPro100g
+        val fett = summeNullable { it.fett } * faktor
+        val gesaettigteFettsaeuren = summeNullable { it.gesaettigteFettsaeuren } * faktor
+        val kohlenhydrate = summeNullable { it.kohlenhydrate } * faktor
+        val zucker = summeNullable { it.zucker } * faktor
+        val ballaststoffe = summeNullable { it.ballaststoffe } * faktor
+        val eiweiss = summeNullable { it.eiweiss } * faktor
+        val salz = summeNullable { it.salz } * faktor
+        val alkohol = summe { it.alkoholGramm } * faktor
+        val organischeSaeuren = summe { it.organischeSaeuren } * faktor
 
         val energieKj = KJ_PRO_G_FETT * fett + KJ_PRO_G_KOHLENHYDRATE * kohlenhydrate +
             KJ_PRO_G_EIWEISS * eiweiss + KJ_PRO_G_BALLASTSTOFFE * ballaststoffe +
@@ -125,9 +181,12 @@ object NaehrwertBerechnung {
             salz = salz,
             alkohol = alkohol,
             organischeSaeuren = organischeSaeuren,
+            bezugsgroesse = bezugsgroesse,
             gesamtGewichtGramm = gesamtGewicht,
+            gesamtvolumenMl = gesamtvolumenMl,
             zutatenliste = zutatenliste,
-            fehlendeDaten = fehlendeDaten
+            fehlendeDaten = fehlendeDaten,
+            alsVernachlaessigbarAkzeptiert = alsVernachlaessigbarAkzeptiert
         )
     }
 }
