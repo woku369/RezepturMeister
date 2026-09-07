@@ -92,6 +92,25 @@ ein Pflichtfeld `quelle` + `quelleHinweis`:
   seriösen Durchschnitt ist (Fett z. B. 1,2–22,3 g/100 g). Vor jeder echten
   Deklaration durch Herstelleretikett ersetzen.
 
+**Wichtige Korrektur September 2026 – Flüssigkeiten pro 100 ml vs. pro 100 g:**
+Die App rechnet intern durchgehend mit "Nährwert pro 100 g" (siehe
+`NaehrwertBerechnung.berechne()`). Für Flüssigkeiten geben Etiketten/
+Verbraucherportale ihre Werte aber oft pro 100 ml an – der Nutzer deckte auf,
+dass das bei **Ahornsirup** unbemerkt direkt als "pro 100 g" übernommen worden
+war (356 statt korrekt 269 kcal/100 g – Ahornsirup hat mit 1,322 g/ml eine für
+Lebensmittel ungewöhnlich hohe Dichte, der Fehler betrug daher volle ~32 %).
+Bei **Rotwein** lag derselbe Fehler vor, dort aber nur mit ~1 % Auswirkung
+(Weindichte liegt nahe 1,0 g/ml). Beide wurden korrigiert und mit der
+jeweiligen Dichte im neuen `Rohstoff.dichte`-Feld hinterlegt. Bei
+**Balsamico-Essig** konnte die ursprüngliche Bezugsgröße nicht mehr geklärt
+werden – dort steht ein expliziter Hinweis im Code, vor Verwendung das
+Originaletikett zu prüfen. Die vier chemisch berechneten Essigsorten
+(Speiseessig/Essigessenz/Weingeistessig) sind von diesem Fehler nicht
+betroffen (ihre Werte sind bereits rechnerisch/definitorisch als g/100g
+abgeleitet), haben aber ebenfalls eine (nur angenäherte) Dichte erhalten.
+**Lehre für neue Flüssigkeits-Rohstoffe:** vor dem Eintragen einer aus dem
+Web recherchierten Zahl immer prüfen, ob sie pro 100 g oder pro 100 ml gilt.
+
 **Empfehlung für den produktiven Einsatz:** Rohstoffe schrittweise durch
 Herstelleretiketten der tatsächlich eingekauften Handelsware ersetzen (am
 genauesten und am leichtesten als Nachweis dokumentierbar), ÖNWT (oenwt.at)

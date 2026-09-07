@@ -32,6 +32,15 @@ object SeedData {
         "Websuche September 2026 mit Verweis auf USDA FoodData Central, nicht direkt aus der " +
             "Primärquelle fdc.nal.usda.gov gegengeprüft – vor produktiver Nutzung dort verifizieren."
 
+    // Dichte September 2026 ergänzt: lineare Näherung zwischen reinem Wasser (1,000 g/ml) und
+    // reiner Essigsäure (1,049 g/ml bei 25 °C) je nach Säuregehalt – kein Messwert für ein
+    // konkretes Produkt, aber ausreichend für die ml->g-Umrechnung bei der Rezeptureingabe. Ändert
+    // NICHTS an den Energie-/Säurewerten selbst (die sind bereits als g/100g definiert, siehe
+    // QUELLE_BERECHNET_HINWEIS), betrifft nur das neue dichte-Feld.
+    private const val DICHTE_ESSIG_HINWEIS =
+        "Dichte: lineare Näherung zwischen Wasser (1,000 g/ml) und reiner Essigsäure " +
+            "(1,049 g/ml) je nach Säuregehalt, kein Messwert des konkreten Produkts."
+
     fun initialeRohstoffe(): List<Rohstoff> = listOf(
         // ---- Chemisch einfache Grundstoffe: rechnerisch/definitorisch eindeutig ----
         Rohstoff(
@@ -59,40 +68,56 @@ object SeedData {
         // ---- Essigsorten: als verdünnte Essigsäure gerechnet ----
         Rohstoff(
             name = "Speiseessig 13% Säure", kategorie = "Einlegeflüssigkeit",
+            dichte = 1.006,
             energieKj = 169.0, energieKcal = 39.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
             organischeSaeuren = 13.0,
-            quelle = NaehrwertQuelle.BERECHNET, quelleHinweis = QUELLE_BERECHNET_HINWEIS
+            quelle = NaehrwertQuelle.BERECHNET,
+            quelleHinweis = "$QUELLE_BERECHNET_HINWEIS $DICHTE_ESSIG_HINWEIS"
         ),
         Rohstoff(
             name = "Speiseessig 2% Säure", kategorie = "Einlegeflüssigkeit",
+            dichte = 1.001,
             energieKj = 26.0, energieKcal = 6.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
             organischeSaeuren = 2.0,
-            quelle = NaehrwertQuelle.BERECHNET, quelleHinweis = QUELLE_BERECHNET_HINWEIS
+            quelle = NaehrwertQuelle.BERECHNET,
+            quelleHinweis = "$QUELLE_BERECHNET_HINWEIS $DICHTE_ESSIG_HINWEIS"
         ),
         Rohstoff(
             name = "Essigessenz 80% Säure", kategorie = "Grundstoff",
+            dichte = 1.039,
             energieKj = 1040.0, energieKcal = 240.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
             organischeSaeuren = 80.0,
-            quelle = NaehrwertQuelle.BERECHNET, quelleHinweis = QUELLE_BERECHNET_HINWEIS
+            quelle = NaehrwertQuelle.BERECHNET,
+            quelleHinweis = "$QUELLE_BERECHNET_HINWEIS $DICHTE_ESSIG_HINWEIS"
         ),
         Rohstoff(
             name = "Balsamico-Essig 6% Säure", kategorie = "Einlegeflüssigkeit",
+            dichte = 1.07,
             energieKj = 368.0, energieKcal = 88.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 17.0, zucker = 14.9, ballaststoffe = 0.0, eiweiss = 0.5, salz = 0.0,
             quelle = NaehrwertQuelle.WEBRECHERCHE,
             quelleHinweis = "$QUELLE_WEB_HINWEIS Balsamico enthält Traubenmost/Zucker – NICHT wie " +
                 "einfacher Speiseessig rein rechnerisch aus dem Säuregehalt ableitbar. Zuckergehalt " +
-                "schwankt stark je Marke/Qualität – Herstelleretikett zwingend erforderlich."
+                "schwankt stark je Marke/Qualität – Herstelleretikett zwingend erforderlich. " +
+                "Dichte 1,07 g/ml September 2026 ergänzt (Näherung, üblicher Bereich 1,06–1,08 g/ml " +
+                "laut Handelsanalysen; echter Balsamico-Essig g.g.A. muss laut Spezifikation " +
+                "mindestens 1,06 g/ml erreichen). ACHTUNG UNGEKLÄRT: anders als bei Ahornsirup/Rotwein " +
+                "konnte NICHT verifiziert werden, ob die obigen Energie-/Nährwerte ursprünglich pro " +
+                "100 ml oder pro 100 g recherchiert wurden – bei Verwendung des tatsächlichen Produkts " +
+                "unbedingt am Originaletikett gegenprüfen, bevor diese Werte für eine Deklaration " +
+                "verwendet werden."
         ),
         Rohstoff(
             name = "Weingeistessig 20% Säure", kategorie = "Einlegeflüssigkeit",
+            dichte = 1.010,
             energieKj = 260.0, energieKcal = 60.0, fett = 0.0, gesaettigteFettsaeuren = 0.0,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
             organischeSaeuren = 20.0,
-            quelle = NaehrwertQuelle.BERECHNET, quelleHinweis = QUELLE_BERECHNET_HINWEIS
+            quelle = NaehrwertQuelle.BERECHNET,
+            quelleHinweis = "$QUELLE_BERECHNET_HINWEIS $DICHTE_ESSIG_HINWEIS"
         ),
         Rohstoff(
             name = "Einlegeessig \"Pikfein\" (Markenprodukt)", kategorie = "Einlegeflüssigkeit",
@@ -251,15 +276,27 @@ object SeedData {
         ),
         Rohstoff(
             name = "Ahornsirup", kategorie = "Süßungsmittel",
-            energieKj = 1491.0, energieKcal = 356.0, fett = 0.0, kohlenhydrate = 89.0, zucker = 89.0,
+            dichte = 1.322,
+            // Etikett/Verbraucherportale (Fddb, Wikifit, Codecheck) geben 356 kcal/1491 kJ/89 g
+            // Kohlenhydrate JE 100 ML an (Ahornsirup wird als Flüssigkeit in ml-Gebinden verkauft) -
+            // das war zuvor unbemerkt direkt als "pro 100 g" übernommen worden (Fehler, September
+            // 2026 durch Nutzer aufgedeckt). Korrekt umgerechnet mit der Dichte 1,322 g/ml (offizieller
+            // Ahornsirup-Dichtestandard bei 66° Brix/Raumtemperatur, SCP Science/BMR):
+            // 356 kcal ÷ 1,322 = 269,3 kcal; 1491 kJ ÷ 1,322 = 1127,8 kJ; 89 g ÷ 1,322 = 67,3 g.
+            // Deckt sich gut mit dem allgemein bekannten USDA-Richtwert für Ahornsirup
+            // (~260 kcal/~67 g Kohlenhydrate pro 100 g) - gute Plausibilitätsprobe für die Umrechnung.
+            energieKj = 1127.8, energieKcal = 269.3, fett = 0.0, kohlenhydrate = 67.3, zucker = 67.3,
             eiweiss = 0.0,
             quelle = NaehrwertQuelle.HERSTELLERETIKETT,
             quelleHinweis = "Auf Wunsch September 2026 auf das konkret verwendete Produkt " +
-                "(Spar Natur*pur Bio-Ahornsirup, 0,5 l) umgestellt. Wert stammt nicht direkt vom " +
+                "(Spar Natur*pur Bio-Ahornsirup, 0,5 l) umgestellt. Rohwert stammt nicht direkt vom " +
                 "Etikett/spar.at, sondern aus mehreren unabhängigen Verbraucherportalen " +
                 "(Fddb, Wikifit, Codecheck), die übereinstimmend dieselben Zahlen für dieses Produkt " +
                 "zeigen – höhere Verlässlichkeit als eine Einzelquelle, aber noch keine " +
-                "Originaletikett-Prüfung. Ballaststoffe und Salz nicht ausgewiesen, NULL belassen."
+                "Originaletikett-Prüfung. Die Portale geben die Werte pro 100 ml an, hier per Dichte " +
+                "(1,322 g/ml, Näherung über den Industriestandard, nicht am konkreten Produkt " +
+                "gemessen) auf pro 100 g umgerechnet – siehe Kommentar oben. Ballaststoffe und Salz " +
+                "nicht ausgewiesen, NULL belassen."
         ),
         Rohstoff(
             name = "Gelierzucker 3:1", kategorie = "Süßungsmittel",
@@ -296,47 +333,60 @@ object SeedData {
         Rohstoff(
             name = "Rotwein, trocken", kategorie = "Sonstige Zutat",
             alkoholGehaltVol = 12.0,
-            // 12 %vol × 0,789 g/ml (Ethanoldichte) ÷ ≈1,0 g/ml (angenommene Weindichte,
-            // keine eigene Messung) ≈ 9,47 g Alkohol/100 g – Berechnungsgrundlage für die
-            // Energieformel, siehe NaehrwertBerechnung.kt.
-            alkoholGramm = 9.47,
-            energieKj = 356.0, energieKcal = 85.0, fett = 0.1, kohlenhydrate = 2.6, zucker = 1.5,
-            eiweiss = 0.1,
+            dichte = 0.99,
+            // 12 %vol × 0,789 g/ml (Ethanoldichte) ÷ 0,99 g/ml (Weindichte, siehe dichte-Feld) ≈
+            // 9,56 g Alkohol/100 g – Berechnungsgrundlage für die Energieformel, siehe
+            // NaehrwertBerechnung.alkoholGrammAusVol(). Vorher mit ≈1,0 g/ml angenommen (9,47 g);
+            // jetzt mit dem dokumentierten Weindichte-Wert neu berechnet, Effekt klein (~1%).
+            alkoholGramm = 9.56,
+            // Die 2026 gefundenen Quellen nannten diese Werte JE 100 ML (siehe Hinweis unten) und
+            // wurden zuvor unbemerkt direkt als "pro 100 g" übernommen. Mit Dichte 0,99 g/ml (OIV-
+            // Referenzbereich für Wein: 0,992–1,012 g/ml bei 20°C, trockener Wein mit wenig
+            // Restzucker eher am unteren Ende) auf pro 100 g umgerechnet – Effekt ist bei Wein
+            // wegen der dichten nahe 1,0 g/ml klein (<2%), aber der Vollständigkeit halber korrigiert.
+            energieKj = 359.6, energieKcal = 85.9, fett = 0.10, kohlenhydrate = 2.63, zucker = 1.52,
+            eiweiss = 0.10,
             quelle = NaehrwertQuelle.WEBRECHERCHE,
             quelleHinweis = "$QUELLE_WEB_HINWEIS Rotwein-Nährwerte streuen stark nach Sorte/" +
-                "Restzuckergehalt/Alkoholgehalt (Quellen nannten 0,8–2,6 g Kohlenhydrate/100 ml) – " +
-                "für die konkret verwendete Weinmarke Herstellerangabe verwenden. energieKj/energieKcal " +
-                "sind nur noch Referenzwerte (Rohstoffliste); für die Rezeptur-Gesamtenergie zählt " +
-                "seit der Anhang-XIV-Korrektur ausschließlich alkoholGramm (~9,47 g, aus 12 %vol " +
-                "abgeleitet) zusammen mit Fett/Kohlenhydrate/Eiweiß – ohne alkoholGramm würde der mit " +
-                "Abstand größte Energieanteil von Wein (Alkohol) in der Rezeptur rechnerisch " +
-                "verschwinden. Laut Nutzer wird konkret Spar-Rotwein im Doppelliter (2-l-Gebinde) " +
-                "verwendet – dafür war online keine produktspezifische Nährwertangabe auffindbar " +
-                "(bei einfachen \"Doppler\"-Weinen seltener indiziert als bei Flaschenweinen). Da " +
-                "österreichische Wein-Kartons den Energiewert i. d. R. selbst aufdrucken, ist ein " +
-                "Blick auf das tatsächliche Gebinde hier schneller und verlässlicher als eine weitere " +
-                "Websuche – bitte dort ablesen (Energie UND Alkoholgehalt) und ersetzen, der obige " +
-                "Wert bleibt bis dahin ein allgemeiner Näherungswert."
+                "Restzuckergehalt/Alkoholgehalt (Quellen nannten 0,8–2,6 g Kohlenhydrate/100 ml, hier " +
+                "mit Dichte 0,99 g/ml auf pro 100 g umgerechnet, siehe Kommentar oben) – für die " +
+                "konkret verwendete Weinmarke Herstellerangabe verwenden. energieKj/energieKcal sind " +
+                "nur noch Referenzwerte (Rohstoffliste); für die Rezeptur-Gesamtenergie zählt seit der " +
+                "Anhang-XIV-Korrektur ausschließlich alkoholGramm (~9,56 g, aus 12 %vol abgeleitet) " +
+                "zusammen mit Fett/Kohlenhydrate/Eiweiß – ohne alkoholGramm würde der mit Abstand " +
+                "größte Energieanteil von Wein (Alkohol) in der Rezeptur rechnerisch verschwinden. " +
+                "Laut Nutzer wird konkret Spar-Rotwein im Doppelliter (2-l-Gebinde) verwendet – dafür " +
+                "war online keine produktspezifische Nährwertangabe auffindbar (bei einfachen " +
+                "\"Doppler\"-Weinen seltener indiziert als bei Flaschenweinen). Da österreichische " +
+                "Wein-Kartons den Energiewert i. d. R. selbst aufdrucken, ist ein Blick auf das " +
+                "tatsächliche Gebinde hier schneller und verlässlicher als eine weitere Websuche – " +
+                "bitte dort ablesen (Energie UND Alkoholgehalt) und ersetzen, der obige Wert bleibt " +
+                "bis dahin ein allgemeiner Näherungswert."
         ),
 
         // ---- Fett/Öl ----
         Rohstoff(
             name = "Sonnenblumenöl", kategorie = "Fett/Öl",
+            dichte = 0.919,
             energieKj = 3700.0, energieKcal = 884.0, fett = 100.0, gesaettigteFettsaeuren = 10.3,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
             quelle = NaehrwertQuelle.USDA,
             quelleHinweis = "$QUELLE_USDA_HINWEIS Reines Pflanzenöl – Fettwert (100 g/100 g) " +
                 "definitorisch, gesättigte Fettsäuren laut USDA-Referenz für linolsäurereiches " +
                 "Sonnenblumenöl (\"linoleic\"); High-Oleic-Sonnenblumenöl hat einen anderen Anteil " +
-                "gesättigter/einfach ungesättigter Fettsäuren – bei Verwendung Etikett prüfen."
+                "gesättigter/einfach ungesättigter Fettsäuren – bei Verwendung Etikett prüfen. " +
+                "Dichte 0,919 g/ml (September 2026, Standardwert bei 20 °C) ergänzt."
         ),
         Rohstoff(
             name = "Olivenöl", kategorie = "Fett/Öl",
+            dichte = 0.915,
             energieKj = 3699.0, energieKcal = 884.0, fett = 100.0, gesaettigteFettsaeuren = 13.8,
             kohlenhydrate = 0.0, zucker = 0.0, ballaststoffe = 0.0, eiweiss = 0.0, salz = 0.0,
             quelle = NaehrwertQuelle.USDA,
             quelleHinweis = "$QUELLE_USDA_HINWEIS Reines Pflanzenöl – Fettwert definitorisch, " +
-                "gesättigte Fettsäuren laut USDA-Referenz für natives/raffiniertes Olivenöl."
+                "gesättigte Fettsäuren laut USDA-Referenz für natives/raffiniertes Olivenöl. " +
+                "Dichte 0,915 g/ml (September 2026, üblicher Bereich 0,913–0,916 g/ml bei 20 °C) " +
+                "ergänzt."
         ),
 
         // ---- Senf ----
